@@ -1,0 +1,3 @@
+name = Node Revision Delete
+description = Delete all the revisions of user choice
+core = 7.x

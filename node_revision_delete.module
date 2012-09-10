@@ -1,0 +1,68 @@
+<?php
+function node_revision_delete_init() {
+   ////Getting the value from the varible table to keep the number of Revisions////
+  $total_revision_delete =   variable_get('node_revision_delete_number');
+  ///////////Get All the Node/////
+  $node_result = db_query('SELECT * FROM {node}');
+  ////////Fetch the Node///////
+  foreach ($node_result as $node_array) {
+    $revision_id_array = array();
+    /////////Get all the revision of the Node//////
+    $revision_array =  node_revision_list($node_array);
+    foreach($revision_array as $revision_array)
+    {
+    	$revision_id_array[] = $revision_array->vid;
+    }
+    $revision_id_array_deleted = array_slice($revision_id_array, $total_revision_delete);
+    ////Delete the Requested Number if Revisions///// 
+    foreach($revision_id_array_deleted as $revision_id)
+    {
+    	node_revision_delete($revision_id);
+    }
+  }
+}
+
+function node_revision_delete_menu() {
+  $items = array();
+
+  $items['admin/config/content/node_revision_delete'] = array(
+    'title' => 'Node Revision Delete Configuration',
+    'description' => 'Configuration for Node Revision',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('node_revision_delete_form'),
+    'access arguments' => array('access administration pages'),
+    'type' => MENU_NORMAL_ITEM,
+  );
+  return $items;
+} 
+
+function node_revision_delete_form($form, &$form_state) 
+{
+  ////Creating the Option Array/////
+  for($i=1;$i<=100;$i++)
+  {
+  	$options[$i]=$i;
+  }
+  $form['node_revision_delete_number'] = array(
+    '#type' => 'select', 
+    '#title' => t('How many revisions do you want to keep ? '), 
+    '#default_value' => 0, 
+    '#options' => $options,
+  );
+  $form['node_revision_delete_number']['#default_value'] = variable_get('node_revision_delete_number'); 
+  $form['actions'] = array('#type' => 'actions');
+  $form['actions']['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Save'),
+  );
+  return $form;
+}
+
+function node_revision_delete_form_submit($form, &$form_state) {
+	if(isset($form_state['values']['node_revision_delete_number']))
+	{
+  		variable_set('node_revision_delete_number',$form_state['values']['node_revision_delete_number']);
+		drupal_set_message(t('Setting Saved Succussfully.'));
+	}
+}
+

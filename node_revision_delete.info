@@ -1,3 +1,10 @@
 name = Node Revision Delete
-description = Delete all the revisions of user choice
+description = Delete the Node Revisions
+package = Content
 core = 7.x
+configure = admin/config/content/node_revision_delete
+php = 5.3
+version = 1.0
+files[] = node_revision_delete.install
+
+

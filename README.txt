@@ -7,7 +7,8 @@ DESCRIPTION/FEATURES
 --------------------
 * Enables the ability to mass delete aging node revisions. 
 Possible settings include node type, 
-the age of node revision before being deleted, along with a cron frequency setting. 
+the age of node revision before being deleted, 
+along with a cron frequency setting. 
 The revisions may be deleted after review on an administer page as well. 
 This module will NEVER delete the current revision of a node.
 

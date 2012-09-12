@@ -134,44 +134,44 @@ function node_revision_delete_form($form, &$form_state) {
   foreach ($content_types as $content_type_name) {
     $content_types_array[$content_type_name->type] = $content_type_name->name;
   }
-  for ($i=1;$i<=100;$i++) {
-    $options[$i]=$i;
+  for ($i=1; $i <= 100; $i++) {
+    $options[$i] = $i;
   }
   $node_revision_delete_content_type_default = explode(",", variable_get('node_revision_delete_content_type'));
   $form['node_revision_delete_content_type'] = array(
-  '#type' => 'checkboxes', 
-  '#options' => $content_types_array,
-  '#title' => t('Select the Content types for deleting revision'),
-  '#default_value' => $node_revision_delete_content_type_default,
+    '#type' => 'checkboxes',
+    '#options' => $content_types_array,
+    '#title' => t('Select the Content types for deleting revision'),
+    '#default_value' => $node_revision_delete_content_type_default,
   );
   $form['node_revision_delete_number'] = array(
-  '#type' => 'select', 
-  '#title' => t('How many revisions do you want to keep ? '), 
-  '#options' => $options,
-  '#default_value' => variable_get('node_revision_delete_number')
+    '#type' => 'select',
+    '#title' => t('How many revisions do you want to keep ? '),
+    '#options' => $options,
+    '#default_value' => variable_get('node_revision_delete_number'),
   );
   $option_time = array(
-  '0'=>'Please Select',
-  'run_now_only'=>'Run Now Only',
-  'everyday'=>'Everyday',
-  'every_week'=>'Every Week',
-  'every_10_days'=>'Every 10 Days',
-  'every_15_days'=>'Every 15 Days',
-  'every_month'=>'Every Month',
-  'every_3_months'=>'Every 3 Months',
-  'every_6_months'=>'Every 6 Months',
-  'every_year'=>'Every Year'
+    '0' => 'Please Select',
+    'run_now_only' => 'Run Now Only',
+    'everyday' => 'Everyday',
+    'every_week' => 'Every Week',
+    'every_10_days' => 'Every 10 Days',
+    'every_15_days' => 'Every 15 Days',
+    'every_month' => 'Every Month',
+    'every_3_months' => 'Every 3 Months',
+    'every_6_months' => 'Every 6 Months',
+    'every_year' => 'Every Year',
   );
   $form['node_revision_delete_time'] = array(
-  '#type' => 'select',  
-  '#options' => $option_time,
-  '#title' => t('What time do you want to run the script ? '), 
-  '#default_value' => variable_get('node_revision_delete_time')
+    '#type' => 'select',  
+    '#options' => $option_time,
+    '#title' => t('What time do you want to run the script ? '), 
+    '#default_value' => variable_get('node_revision_delete_time'),
   );
   $form['actions'] = array('#type' => 'actions');
   $form['actions']['submit'] = array(
-  '#type' => 'submit',
-  '#value' => t('Save'),
+    '#type' => 'submit',
+    '#value' => t('Save'),
   );
   return $form;
   }

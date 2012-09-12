@@ -31,67 +31,67 @@ function node_revision_delete_cron() {
   $time_difference = $current_time - $node_revision_delete_last_execute;
   switch($node_revision_delete_time)
   {
-  	case 'run_now_only':
-  		$execute_revision_delete = 1;
-  		variable_set('node_revision_delete_time',0);
-  		variable_set('node_revision_delete_last_execute',0);
-  	break;
-  	case 'everyday':		
-  		if($time_difference > 86400)
-  		{
-	  		variable_set('node_revision_delete_last_execute',$current_time);
-	  		$execute_revision_delete = 1;
-  		}
-  	break;
-  	case 'every_week':
-  		if($time_difference > 604800)
-  		{
-  			variable_set('node_revision_delete_last_execute',$current_time);
-  			$execute_revision_delete = 1;
-  		}
-  	break;
-  	case 'every_10_days':
-  		if($time_difference > 864000)
-  		{
-  			variable_set('node_revision_delete_last_execute',$current_time);
-  			$execute_revision_delete = 1;
-  		}
-  	break;
-  	case 'every_15_days':
-  		if($time_difference > 1296000)
-  		{
-  			variable_set('node_revision_delete_last_execute',$current_time);
-  			$execute_revision_delete = 1;
-  		}	
-  	break;
-  	case 'every_month':
-  		if($time_difference > 2592000)
-  		{
-  			variable_set('node_revision_delete_last_execute',$current_time);
-  			$execute_revision_delete = 1;
-  		}	
-  	break;
-  	case 'every_3_months':
-  		if($time_difference > 7776000)
-  		{
-  			variable_set('node_revision_delete_last_execute',$current_time);
-  			$execute_revision_delete = 1;
-  		}	
-  	break;
-  	case 'every_6_months':
-  		if($time_difference > 15552000)
-  		{
-  			variable_set('node_revision_delete_last_execute',$current_time);
-  			$execute_revision_delete = 1;
-  		}	
-  	break;
-  	case 'every_year':
-  		if($time_difference > 31536000)
-  		{
-  			variable_set('node_revision_delete_last_execute',$current_time);
-  			$execute_revision_delete = 1;
-  		}	
-  	break;
+		case 'run_now_only':
+			$execute_revision_delete = 1;
+			variable_set('node_revision_delete_time',0);
+			variable_set('node_revision_delete_last_execute',0);
+		break;
+		case 'everyday':		
+			if($time_difference > 86400)
+			{
+				variable_set('node_revision_delete_last_execute',$current_time);
+				$execute_revision_delete = 1;
+			}
+		break;
+		case 'every_week':
+			if($time_difference > 604800)
+			{
+				variable_set('node_revision_delete_last_execute',$current_time);
+				$execute_revision_delete = 1;
+			}
+		break;
+		case 'every_10_days':
+			if($time_difference > 864000)
+			{
+				variable_set('node_revision_delete_last_execute',$current_time);
+				$execute_revision_delete = 1;
+			}
+		break;
+		case 'every_15_days':
+			if($time_difference > 1296000)
+			{
+				variable_set('node_revision_delete_last_execute',$current_time);
+				$execute_revision_delete = 1;
+			}	
+		break;
+		case 'every_month':
+			if($time_difference > 2592000)
+			{
+				variable_set('node_revision_delete_last_execute',$current_time);
+				$execute_revision_delete = 1;
+			}	
+		break;
+		case 'every_3_months':
+			if($time_difference > 7776000)
+			{
+				variable_set('node_revision_delete_last_execute',$current_time);
+				$execute_revision_delete = 1;
+			}	
+		break;
+		case 'every_6_months':
+			if($time_difference > 15552000)
+			{
+				variable_set('node_revision_delete_last_execute',$current_time);
+				$execute_revision_delete = 1;
+			}	
+		break;
+		case 'every_year':
+			if($time_difference > 31536000)
+			{
+				variable_set('node_revision_delete_last_execute',$current_time);
+				$execute_revision_delete = 1;
+			}	
+		break;
   }
   if($execute_revision_delete)
   {

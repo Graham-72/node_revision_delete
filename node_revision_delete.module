@@ -1,5 +1,8 @@
 <?php
 /**
+ * Node Revision Delete Module
+ */
+/**
  * Implements hook_help().
  */
 function node_revision_delete_help($path, $arg) {
@@ -185,8 +188,8 @@ function node_revision_delete_form_submit($form, &$form_state) {
   if (isset($form_state['values']['node_revision_delete_content_type'])) {
     $content_types_array = $form_state['values']['node_revision_delete_content_type'];
     foreach ($content_types_array as $key => $value) {
-    if ($value) {
-        $content_types_list[] = $key;
+      if ($value) {
+          $content_types_list[] = $key;
       }
     }
     if (count($content_types_list)) {
@@ -195,9 +198,9 @@ function node_revision_delete_form_submit($form, &$form_state) {
     variable_set('node_revision_delete_content_type', $node_revision_delete_content_type);
   }
   if (isset($form_state['values']['node_revision_delete_time'])) {
-    variable_set('node_revision_delete_time',$form_state['values']['node_revision_delete_time']);
+    variable_set('node_revision_delete_time', $form_state['values']['node_revision_delete_time']);
   }
-  if($form_state['values']['node_revision_delete_time'] == "run_now_only") {
+  if ($form_state['values']['node_revision_delete_time'] == "run_now_only") {
     node_revision_delete_cron();
   }
   drupal_set_message(t('Setting Saved Successfully.'));

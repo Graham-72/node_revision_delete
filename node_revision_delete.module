@@ -3,20 +3,20 @@
  * Implements hook_help().
  */
 function node_revision_delete_help($path, $arg) {
-	switch ($path) {
-		case 'admin/help#node_revision_delete':
-			$output = '';
-			$output .= '<h3>' . t('About the Node Revision Delete Module') . '</h3>';
-			$output .= '<p>' . t('The Node Revision Delete module allows you to manage the revisions of the Node according to your choice. It helps you to keep the specific number of revisions for the node. This module provides you the flexibility for applying the revision delete for the specific content type and run it on the specific time. You can manage your settings from the <a href="@node_revision_delete">Node Revision Delete Administration Page</a>', array('@node_revision_delete' => url('admin/config/content/node_revision_delete'))) . '</p>';
-			$output .= '<h3>' . t('Uses') . '</h3>';
-			$output .= '<dl>';
-			$output .= '<dd>' . t('Deleting the Node Revisions') . '</dd>';
-			$output .= '<dd>' . t('Set the time to execute the Script') . '</dd>';
-			$output .= '<dd>' . t('Select the Content type for which the revision delete will work') . '</dd>';
-			$output .= '</dl>';
-			return $output;
-		break;
-	}
+  switch ($path) {
+  case 'admin/help#node_revision_delete':
+  $output = '';
+  $output .= '<h3>' . t('About the Node Revision Delete Module') . '</h3>';
+  $output .= '<p>' . t('The Node Revision Delete module allows you to manage the revisions of the Node according to your choice. It helps you to keep the specific number of revisions for the node. This module provides you the flexibility for applying the revision delete for the specific content type and run it on the specific time. You can manage your settings from the <a href="@node_revision_delete">Node Revision Delete Administration Page</a>', array('@node_revision_delete' => url('admin/config/content/node_revision_delete'))) . '</p>';
+  $output .= '<h3>' . t('Uses') . '</h3>';
+  $output .= '<dl>';
+  $output .= '<dd>' . t('Deleting the Node Revisions') . '</dd>';
+  $output .= '<dd>' . t('Set the time to execute the Script') . '</dd>';
+  $output .= '<dd>' . t('Select the Content type for which the revision delete will work') . '</dd>';
+  $output .= '</dl>';
+  return $output;
+  break;
+  }
 }
 /**
  * Implements hook_cron().
@@ -96,7 +96,7 @@ function node_revision_delete_cron() {
   if($execute_revision_delete)
   {
 	  $query = db_select('node', 'n');
-	  $query -> condition('n.type',array($node_revision_delete_content_type)	,'IN')
+	  $query -> condition('n.type',array($node_revision_delete_content_type),'IN')
 	  		 ->fields('n');
 	  $node_result = $query->execute();
 	  foreach ($node_result AS $node_array) {

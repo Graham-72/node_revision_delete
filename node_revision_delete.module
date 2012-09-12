@@ -29,14 +29,14 @@ function node_revision_delete_cron() {
   $execute_revision_delete = 0;
   $current_time = time();
   $time_difference = $current_time - $node_revision_delete_last_execute;
-  switch($node_revision_delete_time) {
+  switch ($node_revision_delete_time) {
     case 'run_now_only':
       $execute_revision_delete = 1;
       variable_set('node_revision_delete_time', 0);
       variable_set('node_revision_delete_last_execute', 0);
       break;
 
-    case 'everyday':		
+    case 'everyday':
       if ($time_difference > 86400) {
         variable_set('node_revision_delete_last_execute', $current_time);
         $execute_revision_delete = 1;
@@ -61,45 +61,45 @@ function node_revision_delete_cron() {
       if ($time_difference > 1296000) {
         variable_set('node_revision_delete_last_execute', $current_time);
         $execute_revision_delete = 1;
-      }	
+      }
       break;
 
     case 'every_month':
       if ($time_difference > 2592000) {
         variable_set('node_revision_delete_last_execute', $current_time);
         $execute_revision_delete = 1;
-      }	
+      }
       break;
 
     case 'every_3_months':
       if ($time_difference > 7776000) {
         variable_set('node_revision_delete_last_execute', $current_time);
         $execute_revision_delete = 1;
-      }	
+      }
       break;
 
     case 'every_6_months':
       if ($time_difference > 15552000) {
         variable_set('node_revision_delete_last_execute', $current_time);
         $execute_revision_delete = 1;
-      }	
+      }
       break;
 
     case 'every_year':
       if ($time_difference > 31536000) {
         variable_set('node_revision_delete_last_execute', $current_time);
         $execute_revision_delete = 1;
-      }	
+      }
       break;
-    }
+  }
   if ($execute_revision_delete) {
     $query = db_select('node', 'n');
-    $query -> condition('n.type',array($node_revision_delete_content_type),'IN')
+    $query->condition('n.type', array($node_revision_delete_content_type), 'IN')
     ->fields('n');
     $node_result = $query->execute();
-    foreach ($node_result AS $node_array) {
+    foreach ($node_result as $node_array) {
       $revision_id_array = array();
-      $revision_array =  node_revision_list($node_array);
+      $revision_array = node_revision_list($node_array);
       foreach ($revision_array as $revision_array) {
         $revision_id_array[] = $revision_array->vid;
       }
@@ -125,14 +125,13 @@ function node_revision_delete_menu() {
     'type' => MENU_NORMAL_ITEM,
   );
   return $items;
-} 
+}
 /**
  * Implements hook_form().
  */
-function node_revision_delete_form($form, &$form_state) 
-{
+function node_revision_delete_form($form, &$form_state) {
   $content_types = node_type_get_types();
-  foreach($content_types AS $content_type_name)
+  foreach($content_types as $content_type_name)
   {
   	$content_types_array[$content_type_name->type] = $content_type_name->name;
   }

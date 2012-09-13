@@ -28,7 +28,7 @@ function node_revision_delete_help($path, $arg) {
  * Implements hook_cron().
  */
 function node_revision_delete_cron() {
-  $total_revision_delete = variable_get('node_revision_delete_number');
+  $total_revision_to_keep = variable_get('node_revision_delete_number');
   $node_revision_delete_content_type = explode(',', variable_get('node_revision_delete_content_type'));
   $node_revision_delete_time = variable_get('node_revision_delete_time');
   $node_revision_delete_last_execute = variable_get('node_revision_delete_last_execute');
@@ -109,7 +109,7 @@ function node_revision_delete_cron() {
       foreach ($revision_array as $revision_array) {
         $revision_id_array[] = $revision_array->vid;
       }
-      $revision_id_array_deleted = array_slice($revision_id_array, $total_revision_delete);
+      $revision_id_array_deleted = array_slice($revision_id_array, $total_revision_to_keep);
       foreach ($revision_id_array_deleted as $revision_id) {
         node_revision_delete($revision_id);
       }

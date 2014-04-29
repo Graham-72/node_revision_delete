@@ -1,6 +1,6 @@
 Introduction
 ============
-node_revision_delete adds the ability to mass delete aging node revisions. 
+node_revision_delete adds the ability to mass delete aging node revisions.
 
 INSTALL/CONFIG
 --------------

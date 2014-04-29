@@ -30,6 +30,36 @@ function node_revision_delete_help($path, $arg) {
       break;
   }
 }
+
+/**
+ * Implements hook_permission().
+ */
+function node_revision_delete_permission() {
+  return array(
+    'administer node_revision_delete' => array(
+      'title' => t('Administer revision deletion settings'),
+    ),
+  );
+}
+
+/**
+ * Implements hook_menu().
+ */
+function node_revision_delete_menu() {
+  $items = array();
+
+  $items['admin/config/content/node_revision_delete'] = array(
+    'title' => 'Node Revision Delete Configuration',
+    'description' => 'Configuration for Node Revision',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('node_revision_delete_form'),
+    'access arguments' => array('administer node_revision_delete'),
+    'type' => MENU_NORMAL_ITEM,
+  );
+
+  return $items;
+}
+
 /**
  * Implements hook_cron().
  */
@@ -156,22 +186,6 @@ function node_revision_delete_cron() {
   }
 }
 
-/**
- * Implements hook_menu().
- */
-function node_revision_delete_menu() {
-  $items = array();
-
-  $items['admin/config/content/node_revision_delete'] = array(
-    'title' => 'Node Revision Delete Configuration',
-    'description' => 'Configuration for Node Revision',
-    'page callback' => 'drupal_get_form',
-    'page arguments' => array('node_revision_delete_form'),
-    'access arguments' => array('access administration pages'),
-    'type' => MENU_NORMAL_ITEM,
-  );
-  return $items;
-}
 /**
  * Implements hook_form().
  */

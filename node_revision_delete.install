@@ -27,7 +27,7 @@ function node_revision_delete_uninstall() {
 /**
  * Sets max amount of revisions per content type.
  */
-function node_revision_delete_update_7100() {
+function node_revision_delete_update_7200() {
   // If content types were selected, set the global max to each of them.
   $content_types = variable_get('node_revision_delete_content_type', '');
   if (!empty($content_types)) {

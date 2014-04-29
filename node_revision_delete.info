@@ -1,0 +1,13 @@
+name = Node Revision Delete
+description = Delete the Node Revisions
+package = Content
+core = 7.x
+configure = admin/config/content/node_revision_delete
+php = 5.3
+
+; Information added by drupal.org packaging script on 2012-09-13
+version = "7.x-1.1"
+core = "7.x"
+project = "node_revision_delete"
+datestamp = "1347551592"
+

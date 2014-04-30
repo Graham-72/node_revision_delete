@@ -163,18 +163,15 @@ function node_revision_delete_cron() {
                        ));
     $counter = 0;
     foreach ($result as $row) {
-      $revision_id_array = array();
       $node = new stdClass();
       $node->nid = $row->nid;
-      $revision_array = node_revision_list($node);
-      foreach ($revision_array as $revision_array) {
-        $revision_id_array[] = $revision_array->vid;
-      }
+      $revisions = node_revision_list($node);
       // Keep recent revisions.
-      $revision_id_array_deleted = array_slice($revision_id_array, $tracked_content_types[$row->type]);
+      $revisions = array_slice($revisions, $tracked_content_types[$row->type]);
       // Reverse the list so we start deleting oldest revisions first.
-      $revision_id_array_deleted = array_reverse($revision_id_array_deleted);
-      foreach ($revision_id_array_deleted as $revision_id) {
+      $revisions = array_reverse($revisions);
+      foreach ($revisions as $revision) {
+        $revision_id = $revision->vid;
         node_revision_delete($revision_id);
         $counter++;
         // Stop deleting if we hit the limit per cron run.

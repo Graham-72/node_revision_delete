@@ -3,4 +3,3 @@ description = Track and prune node revisions.
 package = Content
 core = 7.x
 configure = admin/config/content/node_revision_delete
-php = 5.3

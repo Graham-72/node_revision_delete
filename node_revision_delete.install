@@ -44,3 +44,14 @@ function node_revision_delete_update_7200() {
   variable_del('node_revision_delete_number');
   variable_del('node_revision_delete_content_type');
 }
+
+/**
+ * Removes node_revision_delete_time if its values is 0
+ *
+ * It was matching a wrong condition in a switch at hook_cron.
+ */
+function node_revision_delete_update_7201() {
+  if (variable_get('node_revision_delete_time') == 0) {
+    variable_del('node_revision_delete_time');
+  }
+}

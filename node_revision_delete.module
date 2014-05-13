@@ -187,10 +187,51 @@ function node_revision_delete_cron() {
  * Implements hook_form().
  */
 function node_revision_delete_form($form, &$form_state) {
-  $form['description'] = array(
-    '#markup' => '<p>The following are the global settings to delete revisions. Edit a content type to set ' .
-                 'the maximum amount of revisions to keep.</p>'
+  $instructions = <<<EOL
+      <p>To allow Node Revision Delete to act upon a certain content type, you
+        should navigate to that content type's edit page via Structure >
+        Content types > [content type] > edit. Under <em>Publishing Options</em>,
+        enable <em>Create new revision</em> and <em>Limit the amount of revisions for this content type</em>.
+        Change the number at <em>Maximum number of revisions to keep</em> if you
+        need to and finally save your changes.</p>
+EOL;
+
+  $form['instruction'] = array(
+    '#markup' => t($instructions),
   );
+
+  // List tracked content types.
+  $tracked_header = array('Content Type', 'Machine Name', 'Revisions to Keep', '&nbsp;');
+  $tracked_content_types = array();
+  foreach (node_type_get_names() as $type => $name) {
+    if (variable_get('node_revision_delete_track_' . $type)) {
+      $tracked_content_types[] = array(
+        $name,
+        $type,
+        (int) variable_get('node_revision_delete_number_' . $type),
+        l(t('edit'), 'admin/structure/types/manage/' . $type),
+      );
+    }
+  }
+  if (!empty($tracked_content_types)) {
+    $form['tracked'] = array(
+      '#prefix' => '<strong>' . t('Currently tracked content types') . '</strong>',
+      '#markup' => theme('table', array('header' => $tracked_header, 'rows' => $tracked_content_types)),
+    );
+  }
+
+  // Number of revisions to delete per loop.
+  $options_cron = array(10, 20, 50, 100, 200, 500, 1000);
+  $form['node_revision_delete_cron'] = array(
+    '#type' => 'select',
+    '#title' => t('How many revisions do you want to delete per cron run?'),
+    '#description' => t('When a value different than "Run now only" is set at "WHAT TIME DO YOU WANT TO RUN THE SCRIPT?" revisions are ' .
+                        'deleted on cron run. This option defines the maximum amount of revisions to delete per cron run.'),
+    '#options' => array_combine($options_cron, $options_cron),
+    '#default_value' => variable_get('node_revision_delete_cron', NODE_REVISION_DELETE_CRON),
+  );
+
+  // Available times to delete revisions.
   $option_time = array(
     '0' => 'Never',
     'run_now_only' => 'Run Now Only',
@@ -205,15 +246,6 @@ function node_revision_delete_form($form, &$form_state) {
     'every_6_months' => 'Every 6 Months',
     'every_year' => 'Every Year',
   );
-  $options_cron = array(10, 20, 50, 100, 200, 500, 1000);
-  $form['node_revision_delete_cron'] = array(
-    '#type' => 'select',
-    '#title' => t('How many revisions do you want to delete per cron run?'),
-    '#description' => t('When a value different than "Run now only" is set at "WHAT TIME DO YOU WANT TO RUN THE SCRIPT?" revisions are ' .
-                        'deleted on cron run. This option defines the maximum amount of revisions to delete per cron run.'),
-    '#options' => array_combine($options_cron, $options_cron),
-    '#default_value' => variable_get('node_revision_delete_cron', NODE_REVISION_DELETE_CRON),
-  );
   $form['node_revision_delete_time'] = array(
     '#type' => 'select',
     '#options' => $option_time,
@@ -225,6 +257,7 @@ function node_revision_delete_form($form, &$form_state) {
     '#type' => 'submit',
     '#value' => t('Save'),
   );
+
   return $form;
 }
 

@@ -80,7 +80,7 @@ function node_revision_delete_cron() {
   switch ($node_revision_delete_time) {
     case 'run_now_only':
       $execute_revision_delete = 1;
-      variable_set('node_revision_delete_time', 0);
+      variable_del('node_revision_delete_time');
       variable_set('node_revision_delete_last_execute', 0);
       break;
 

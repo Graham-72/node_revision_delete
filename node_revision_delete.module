@@ -6,6 +6,7 @@
  */
 
 // Maximum amount of revisions to delete per cron run.
+define('NODE_REVISION_DELETE_TIME', 'never');
 define('NODE_REVISION_DELETE_CRON', 50);
 define('NODE_REVISION_DELETE_NUMBER', 50);
 define('NODE_REVISION_DELETE_DISABLED', FALSE);
@@ -65,34 +66,18 @@ function node_revision_delete_menu() {
  */
 function node_revision_delete_cron() {
   // Get node revision limits for all content types.
-  $tracked_content_types = array();
-  foreach (node_type_get_names() as $type => $name) {
-    if (variable_get('node_revision_delete_track_' . $type)) {
-      $tracked_content_types[$type] = (int) variable_get('node_revision_delete_number_' . $type);
-    }
-  }
   // If there are no tracked content types, exit this cron hook.
-  if (empty($tracked_content_types)) {
+  if (empty(node_revision_delete_content_types())) {
     return;
   }
-  $max_per_cron = variable_get('node_revision_delete_cron', NODE_REVISION_DELETE_CRON);
+
+  // Figure out whether we should delete revisions or not on this run.
   $node_revision_delete_time = variable_get('node_revision_delete_time');
   $node_revision_delete_last_execute = variable_get('node_revision_delete_last_execute');
   $execute_revision_delete = 0;
   $current_time = time();
   $time_difference = $current_time - $node_revision_delete_last_execute;
   switch ($node_revision_delete_time) {
-    case 'run_now_only':
-      $execute_revision_delete = 1;
-      variable_del('node_revision_delete_time');
-      variable_set('node_revision_delete_last_execute', 0);
-      break;
-
-    case 'drush':
-      variable_set('node_revision_delete_last_execute', $current_time);
-      $execute_revision_delete = 1;
-      break;
-
     case 'every_time':
       variable_set('node_revision_delete_last_execute', $current_time);
       $execute_revision_delete = 1;
@@ -154,37 +139,74 @@ function node_revision_delete_cron() {
       }
       break;
   }
+
   if ($execute_revision_delete) {
-    // Start by selecting candidate nodes.
-    $result = db_query('SELECT n.type, n.nid, count(*) as total
-                       FROM {node} n
-                       INNER JOIN {node_revision} r ON r.nid = n.nid
-                       WHERE n.type IN (:content_types)
-                       GROUP BY r.nid
-                       HAVING total > 1
-                       ORDER BY total DESC', array(
-                         ':content_types' => array_keys($tracked_content_types),
-                       ));
-    $counter = 0;
-    foreach ($result as $row) {
-      $node = new stdClass();
-      $node->nid = $row->nid;
-      $revisions = node_revision_list($node);
-      // Keep recent revisions.
-      $revisions = array_slice($revisions, $tracked_content_types[$row->type]);
-      // Reverse the list so we start deleting oldest revisions first.
-      $revisions = array_reverse($revisions);
-      foreach ($revisions as $revision) {
-        $revision_id = $revision->vid;
-        node_revision_delete($revision_id);
-        $counter++;
-        // Stop deleting if we hit the limit per cron run.
-        if ($counter == $max_per_cron) {
-          break 2;
-        }
+    $deleted = _node_revision_delete_do_delete();
+    drupal_set_message(t('Deleted @total revisions.', array('@total' => count($deleted))));
+  }
+}
+
+/**
+ * Private function to perform revision deletion.
+ *
+ * @return array
+ *   The array of deleted revisions.
+ */
+function _node_revision_delete_do_delete() {
+  $tracked_content_types = node_revision_delete_content_types();
+  if (empty($tracked_content_types)) {
+    return array();
+  }
+  $max = variable_get('node_revision_delete_cron', NODE_REVISION_DELETE_CRON);
+  // Start by selecting candidate nodes.
+  $result = db_query('SELECT n.type, n.nid, count(*) as total
+                     FROM {node} n
+                     INNER JOIN {node_revision} r ON r.nid = n.nid
+                     WHERE n.type IN (:content_types)
+                     GROUP BY r.nid
+                     HAVING total > 1
+                     ORDER BY total DESC', array(
+                       ':content_types' => array_keys($tracked_content_types),
+                     ));
+  $counter = 0;
+  $deleted = array();
+  foreach ($result as $row) {
+    $node = new stdClass();
+    $node->nid = $row->nid;
+    $revisions = node_revision_list($node);
+    // Keep recent revisions.
+    $revisions = array_slice($revisions, $tracked_content_types[$row->type]);
+    // Reverse the list so we start deleting oldest revisions first.
+    $revisions = array_reverse($revisions);
+    foreach ($revisions as $revision) {
+      $revision_id = $revision->vid;
+      node_revision_delete($revision_id);
+      $counter++;
+      $deleted[] = $revision;
+      // Stop deleting if we hit the limit per cron run.
+      if ($counter == $max) {
+        break 2;
       }
     }
   }
+
+  return $deleted;
+}
+
+/**
+ * Helper function to return the list of tracked content types.
+ *
+ * @return array
+ *   Array of tracked content type as $machine_name => max revisions to keep.
+ */
+function node_revision_delete_content_types() {
+  $tracked_content_types = array();
+  foreach (node_type_get_names() as $type => $name) {
+    if (variable_get('node_revision_delete_track_' . $type)) {
+      $tracked_content_types[$type] = (int) variable_get('node_revision_delete_number_' . $type);
+    }
+  }
+  return $tracked_content_types;
 }
 
 /**
@@ -206,21 +228,22 @@ EOL;
 
   // List tracked content types.
   $tracked_header = array('Content Type', 'Machine Name', 'Revisions to Keep', '&nbsp;');
-  $tracked_content_types = array();
-  foreach (node_type_get_names() as $type => $name) {
-    if (variable_get('node_revision_delete_track_' . $type)) {
-      $tracked_content_types[] = array(
-        $name,
-        $type,
-        (int) variable_get('node_revision_delete_number_' . $type),
-        l(t('edit'), 'admin/structure/types/manage/' . $type),
-      );
-    }
-  }
+  $tracked_content_types = node_revision_delete_content_types();
   if (!empty($tracked_content_types)) {
+    $rows = array();
+    foreach (node_type_get_names() as $type => $name) {
+      if (array_key_exists($type, $tracked_content_types)) {
+        $rows[] = array(
+          $name,
+          $type,
+          (int) $tracked_content_types[$type],
+          l(t('edit'), 'admin/structure/types/manage/' . $type),
+        );
+      }
+    }
     $form['tracked'] = array(
       '#prefix' => '<strong>' . t('Currently tracked content types') . '</strong>',
-      '#markup' => theme('table', array('header' => $tracked_header, 'rows' => $tracked_content_types)),
+      '#markup' => theme('table', array('header' => $tracked_header, 'rows' => $rows)),
     );
   }
 
@@ -237,9 +260,7 @@ EOL;
 
   // Available times to delete revisions.
   $option_time = array(
-    '0' => 'Never',
-    'run_now_only' => 'Run Now Only',
-    'drush' => 'Run only on Drush',
+    'never' => 'Never',
     'every_time' => 'Every time cron runs',
     'everyday' => 'Everyday',
     'every_week' => 'Every Week',
@@ -253,8 +274,15 @@ EOL;
   $form['node_revision_delete_time'] = array(
     '#type' => 'select',
     '#options' => $option_time,
-    '#title' => t('What time do you want to run the script ? '),
-    '#default_value' => variable_get('node_revision_delete_time'),
+    '#title' => t('How often should revision be deleted while cron runs?'),
+    '#default_value' => variable_get('node_revision_delete_time', NODE_REVISION_DELETE_TIME),
+  );
+  $form['run_now'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Delete revisions now.'),
+    '#description' => t('This will delete revisions up to the amount defined above. Useful when there is a small ' .
+                        'amount of revisions to delete.'),
+    '#default_value' => 0,
   );
   $form['actions'] = array('#type' => 'actions');
   $form['actions']['submit'] = array(
@@ -266,17 +294,14 @@ EOL;
 }
 
 /**
- * FormAPI submission to Save the Setting for deleting the revisions.
+ * Form submit handler for the settings form.
  */
 function node_revision_delete_form_submit($form, &$form_state) {
-  if (isset($form_state['values']['node_revision_delete_cron'])) {
-    variable_set('node_revision_delete_cron', $form_state['values']['node_revision_delete_cron']);
-  }
-  if (isset($form_state['values']['node_revision_delete_time'])) {
-    variable_set('node_revision_delete_time', $form_state['values']['node_revision_delete_time']);
-  }
-  if ($form_state['values']['node_revision_delete_time'] == "run_now_only") {
-    node_revision_delete_cron();
+  variable_set('node_revision_delete_cron', $form_state['values']['node_revision_delete_cron']);
+  variable_set('node_revision_delete_time', $form_state['values']['node_revision_delete_time']);
+  if ($form_state['values']['run_now'] == 1) {
+    $deleted = _node_revision_delete_do_delete();
+    drupal_set_message(t('Deleted @total revisions.', array('@total' => count($deleted))));
   }
   drupal_set_message(t('Settings Saved Successfully.'));
 }

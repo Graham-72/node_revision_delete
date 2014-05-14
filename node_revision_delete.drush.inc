@@ -16,6 +16,7 @@ function node_revision_delete_drush_command() {
     'options' => array(
       'loops' => 'The amount of times to call node_revision_delete_cron(). Defaults to infinite, which means. ' .
                  'that it will run until no further revisions are to be deleted.',
+      'show-deleted' => 'Whether to return the list of deleted revisions or not. Defaults to FALSE',
     ),
     'examples' => array(
       'drush nrd --loops=10' => 'Calls _node_revision_delete_do_delete() 10 times.',
@@ -37,9 +38,9 @@ function drush_node_revision_delete() {
   }
   do {
     $deleted = _node_revision_delete_do_delete();
-    drush_log(format_string('Deleted @total revisions.', array('@total' => count($deleted))));
-    if (drush_get_context('DRUSH_VERBOSE')) {
-      drush_log(print_r($deleted, TRUE));
+    drush_log(format_string('Deleted @total revisions.', array('@total' => count($deleted))), 'ok');
+    if (drush_get_option('show-deleted')) {
+      drush_log(print_r($deleted, TRUE), 'ok');
     }
     $loops--;
   } while (count($deleted) && $loops > 0);

@@ -67,7 +67,8 @@ function node_revision_delete_menu() {
 function node_revision_delete_cron() {
   // Get node revision limits for all content types.
   // If there are no tracked content types, exit this cron hook.
-  if (empty(node_revision_delete_content_types())) {
+  $content_types = node_revision_delete_content_types();
+  if (empty($content_types)) {
     return;
   }
 

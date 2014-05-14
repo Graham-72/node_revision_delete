@@ -71,6 +71,10 @@ function node_revision_delete_cron() {
       $tracked_content_types[$type] = (int) variable_get('node_revision_delete_number_' . $type);
     }
   }
+  // If there are no tracked content types, exit this cron hook.
+  if (empty($tracked_content_types)) {
+    return;
+  }
   $max_per_cron = variable_get('node_revision_delete_cron', NODE_REVISION_DELETE_CRON);
   $node_revision_delete_time = variable_get('node_revision_delete_time');
   $node_revision_delete_last_execute = variable_get('node_revision_delete_last_execute');

@@ -252,7 +252,7 @@ EOL;
   $options_cron = array(10, 20, 50, 100, 200, 500, 1000);
   $form['node_revision_delete_cron'] = array(
     '#type' => 'select',
-    '#title' => t('How many revisions do you want to delete per cron run?'),
+    '#title' => t("What's the maximum amount of revisions that should be deleted per cron run?"),
     '#description' => t('When a value different than "Run now only" is set at "WHAT TIME DO YOU WANT TO RUN THE SCRIPT?" revisions are ' .
                         'deleted on cron run. This option defines the maximum amount of revisions to delete per cron run.'),
     '#options' => array_combine($options_cron, $options_cron),
@@ -275,7 +275,7 @@ EOL;
   $form['node_revision_delete_time'] = array(
     '#type' => 'select',
     '#options' => $option_time,
-    '#title' => t('How often should revision be deleted while cron runs?'),
+    '#title' => t('How often should revisions be deleted?'),
     '#default_value' => variable_get('node_revision_delete_time', NODE_REVISION_DELETE_TIME),
   );
   $form['run_now'] = array(

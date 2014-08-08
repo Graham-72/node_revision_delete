@@ -46,7 +46,7 @@ function node_revision_delete_update_7200() {
 }
 
 /**
- * Removes node_revision_delete_time if its values is 0
+ * Removes node_revision_delete_time if its values is 0.
  *
  * It was matching a wrong condition in a switch at hook_cron.
  */

@@ -37,7 +37,9 @@ function node_revision_delete_drush_command() {
 function drush_node_revision_delete($content_type, $revisions_to_keep) {
   // Set up the batch job.
   $batch = array(
-    'operations' => array(array('node_revision_delete_batch_process', array($content_type, $revisions_to_keep))),
+    'operations' => array(
+      array('node_revision_delete_batch_process', array($content_type, $revisions_to_keep))
+    ),
     'title' => t('Node Revision Delete batch job'),
     'init_message' => t('Starting...'),
     'error_message' => t('An error occurred'),

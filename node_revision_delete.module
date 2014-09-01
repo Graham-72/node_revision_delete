@@ -377,21 +377,6 @@ function node_revision_delete_form_node_type_form_alter(&$form, &$form_state) {
         ':input[name="node_revision_delete_track"]' => array('checked' => TRUE),
       ),
     ),
+    '#element_validate' => array('element_validate_integer_positive'),
   );
-  $form['#validate'][] = 'node_revision_delete_number_validate';
-}
-
-/**
- * Field validation callback for node_revision_delete_number.
- */
-function node_revision_delete_number_validate($form, &$form_state) {
-  $values = $form_state['values'];
-
-  // Make sure the number is a positive integer if we are tracking revisions.
-  if ($values['node_revision_delete_track'] == 1) {
-    $max_revisions = $values['node_revision_delete_number'];
-    if ((int) $max_revisions != $max_revisions || (int) $max_revisions <= 0) {
-      form_set_error('node_revision_delete_number', t('Maximum number of revisions must be a positive integer value.'));
-    }
-  }
 }

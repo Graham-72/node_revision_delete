@@ -47,8 +47,8 @@ function node_revision_delete_permission() {
  */
 function node_revision_delete_menu() {
   $items['admin/config/content/node_revision_delete'] = array(
-    'title' => 'Node Revision Delete Configuration',
-    'description' => 'Configuration for Node Revision',
+    'title' => 'Node Revision Delete',
+    'description' => 'Settings for automatically deleting node revisions.',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('node_revision_delete_form'),
     'access arguments' => array('administer node_revision_delete'),

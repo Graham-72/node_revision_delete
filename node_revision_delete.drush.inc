@@ -18,9 +18,6 @@ function node_revision_delete_drush_command() {
       'revisions' => 'The maximum amount of revisions to keep per node for this content type.',
     ),
     'required-arguments' => TRUE,
-    'options' => array(
-      'show-deleted' => 'Whether to print the list of deleted revisions or not. Defaults to FALSE',
-    ),
     'examples' => array(
       'drush nrd article 50' => 'Keeps the latest 50 revisions of every article. Deletes the rest.',
     ),

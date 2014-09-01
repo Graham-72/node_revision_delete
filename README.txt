@@ -2,8 +2,8 @@ Introduction
 ============
 node_revision_delete adds the ability to mass delete aging node revisions.
 
-INSTALL/CONFIG
---------------
+INSTALLATION
+============
 1. Move this folder into your modules directory like you would any other module.
 2. Enable it from Modules >> Node Revision Delete.
 3. Global module settings such as when to run it and how many revisions to

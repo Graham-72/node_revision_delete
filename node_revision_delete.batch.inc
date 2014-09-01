@@ -16,11 +16,9 @@ function node_revision_delete_batch_process($content_type, $max_revisions, &$con
     $context['sandbox']['total'] = count($context['sandbox']['nids']);
   }
 
-  // Process one node per loop. Delete a maximum of 50 revisions per node.
-  $max = 50;
   $nid = $context['sandbox']['nids'][$context['sandbox']['current']];
   $deleted_revisions = _node_revision_delete_do_delete($nid, $max_revisions);
-  $context['sandbox']['deleted'][] = $deleted_revisions->list;
+  $context['sandbox']['deleted'][] = $deleted_revisions->count;
   if (empty($deleted_revisions->pending)) {
     $context['sandbox']['current']++;
   }

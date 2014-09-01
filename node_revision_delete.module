@@ -148,7 +148,7 @@ function node_revision_delete_cron() {
       if (!empty($candidate_nids)) {
         foreach ($candidate_nids as $nid) {
           $deleted_revisions = _node_revision_delete_do_delete($nid, $revisions_to_keep, $max);
-          $total_deleted += count($deleted_revisions->list);
+          $total_deleted += $deleted_revisions->count;
           if ($total_deleted >= $max) {
             break 2;
           }
@@ -186,14 +186,14 @@ function _node_revision_delete_do_delete($nid, $revisions_to_keep, $max = 50) {
   // POPO to keep track of deleted revisions and whether there are more
   // to be deleted on a next run.
   $deleted_revisions = new stdClass();
-  $deleted_revisions->list = array();
+  $deleted_revisions->count = 0;
   $deleted_revisions->pending = FALSE;
   foreach ($revisions as $revision) {
     $revision_id = $revision->vid;
     if (node_revision_delete($revision_id)) {
-      $deleted_revisions->list[] = $revision;
+      $deleted_revisions->count++;
       // Stop deleting if we hit the limit per cron run.
-      if (count($deleted_revisions->list) == $max) {
+      if ($deleted_revisions->count == $max) {
         $deleted_revisions->pending = TRUE;
         break;
       }

@@ -384,3 +384,19 @@ function node_revision_delete_form_node_type_form_alter(&$form, &$form_state) {
     '#element_validate' => array('element_validate_integer_positive'),
   );
 }
+
+/**
+ * Implements hook_workbench_moderation_transition().
+ *
+ * Delete old revisions directly during moderation transition.
+ */
+function node_revision_delete_workbench_moderation_transition($node, $previous_state, $new_state) {
+  $settings = node_revision_delete_content_types();
+  if (!empty($settings[$node->type])) {
+    $deleted_revisions = _node_revision_delete_do_delete($node->nid, $settings[$node->type]);
+
+    if (!empty($deleted_revisions->count)) {
+      drupal_set_message(t('Deleted @total revisions.', array('@total' => $deleted_revisions->count)));
+    }
+  }
+}

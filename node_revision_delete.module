@@ -255,7 +255,7 @@ function node_revision_delete_form($form, &$form_state) {
   );
 
   // List tracked content types.
-  $tracked_header = array(
+  $headers = array(
     'Content Type',
     'Machine Name',
     'Revisions to Keep',
@@ -266,20 +266,24 @@ function node_revision_delete_form($form, &$form_state) {
   if (!empty($tracked_content_types)) {
     $rows = array();
     foreach (node_type_get_names() as $type => $name) {
+      $row = array(
+        'name' => $name,
+        'machine_name' => $type,
+        'number' => t('Untracked'),
+        'candidates' => '-',
+        'link' => l(t('edit'), 'admin/structure/types/manage/' . $type),
+      );
+
       if (array_key_exists($type, $tracked_content_types)) {
-        $candidate_nids = count(node_revision_delete_candidates($type, $tracked_content_types[$type]));
-        $rows[] = array(
-          $name,
-          $type,
-          $tracked_content_types[$type],
-          $candidate_nids,
-          l(t('edit'), 'admin/structure/types/manage/' . $type),
-        );
+        $row['number'] = $tracked_content_types[$type];
+        $row['candidates'] = count(node_revision_delete_candidates($type, $tracked_content_types[$type]));
       }
+
+      $rows[] = $row;
     }
     $form['tracked'] = array(
-      '#prefix' => '<strong>' . t('Currently tracked content types') . '</strong>',
-      '#markup' => theme('table', array('header' => $tracked_header, 'rows' => $rows)),
+      '#prefix' => '<strong>' . t('Current configuration') . '</strong>',
+      '#markup' => theme('table', array('header' => $headers, 'rows' => $rows)),
     );
   }
 

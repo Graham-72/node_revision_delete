@@ -8,18 +8,12 @@ node_revision_delete.settings:
     node_revision_delete_last_execute:
       type: integer
       label: 'Last time that the node revision delete was made' 
-    node_revision_delete_number:
-      type: sequence
-      label: 'List with the maximum number of revisions to keep for each configured content type'
-      sequence:
-        type: integer
-        label: 'Maximum number of revisions to keep'
     node_revision_delete_time:
       type: string
       label: 'Frequency with which to delete revisions while cron is running'
     node_revision_delete_track:
       type: sequence
-      label: 'List with the content types configured to remove revisions'
+      label: 'List with the maximum number of revisions to keep for each content_type'
       sequence:
-        type: boolean
-        label: 'Indicates whether or not the content type is configured to remove revisions'
+        type: integer
+        label: 'Number of revisions to keep'

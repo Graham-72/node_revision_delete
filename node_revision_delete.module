@@ -1,0 +1,52 @@
+<?php
+
+/**
+ * @file
+ * Contains node_revision_delete.module.
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\Core\Url;
+use Drupal\Core\Link;
+
+/**
+ * Implements hook_help().
+ */
+function node_revision_delete_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    // Main module help.
+    case 'help.page.node_revision_delete':
+
+      $output = '';
+      $output .= '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('The Node Revision Delete module allows you to manage the revisions of the Node according to your choice. It helps you to keep the specific number of revisions for the node. This module provides you the flexibility for applying the revision delete for the specific content type and run it on the specific time.') . '</p>';
+      $output .= '<h3>' . t('Uses') . '</h3>';
+      $output .= '<dl>';
+      $output .= '<dt>' . t('Configuring the module') . '</dt>';
+      $output .= '<dd>' . t('You can manage your settings from the @config-page page. For this you need the <em>Administer node revision delete settings</em> permission.', array('@config-page' => Link::fromTextAndUrl('Node Revision Delete Administration Page', Url::fromRoute('node_revision_delete.admin_settings'))->toString())) . '</dd>';
+      $output .= '</dl>';
+      $output .= '<h3>' . t('Drush commands') . '</h3>';
+      $output .= '<dl>';
+      $output .= '<dt>drush node-revision-delete</dt>';
+      $output .= '<dd>' . t('Deletes old node revisions for a given content type.') . '</dd>';
+      $output .= '</dl>';
+
+      return $output;
+
+    case 'node_revision_delete.admin_settings':
+      $output = '';
+      $output .= '<h3>' . t('Drush commands') . '</h3>';
+      $output .= '<dl>';
+      $output .= '<dt>drush onlyone-list</dt>';
+      $output .= '<dd>' . t('Shows a content types list according to the status selected as argument.') . '</dd>';
+      $output .= '<dt>drush onlyone-summary</dt>';
+      $output .= '<dd>' . t('Show the status summary of all the content types.') . '</dd>';
+      $output .= '<dt>drush onlyone-enable</dt>';
+      $output .= '<dd>' . t('Configure content types to have Only One node.') . '</dd>';
+      $output .= '<dt>drush onlyone-disable</dt>';
+      $output .= '<dd>' . t("Configure content types to not have Only One node.") . '</dd>';
+      $output .= '</dl>';
+
+      return $output;
+  }
+}

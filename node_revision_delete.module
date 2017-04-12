@@ -4,7 +4,6 @@
  * @file
  * Contains node_revision_delete.module.
  */
-
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Url;
 use Drupal\Core\Link;
@@ -35,18 +34,23 @@ function node_revision_delete_help($route_name, RouteMatchInterface $route_match
 
     case 'node_revision_delete.admin_settings':
       $output = '';
-      $output .= '<h3>' . t('Drush commands') . '</h3>';
-      $output .= '<dl>';
-      $output .= '<dt>drush onlyone-list</dt>';
-      $output .= '<dd>' . t('Shows a content types list according to the status selected as argument.') . '</dd>';
-      $output .= '<dt>drush onlyone-summary</dt>';
-      $output .= '<dd>' . t('Show the status summary of all the content types.') . '</dd>';
-      $output .= '<dt>drush onlyone-enable</dt>';
-      $output .= '<dd>' . t('Configure content types to have Only One node.') . '</dd>';
-      $output .= '<dt>drush onlyone-disable</dt>';
-      $output .= '<dd>' . t("Configure content types to not have Only One node.") . '</dd>';
-      $output .= '</dl>';
+      $output .= '<p>' . t("To allow Node Revision Delete to act upon a certain content type, you should navigate to the desired content type's edit page via:") . '</p>';
+      $output .= '<em>' . t('Administration » Structure » Content types » [Content type name]') . '</em>';
+      $output .= '<p>' . t(" Under the Publishing Options tab, enable 'Create new revision' and 'Limit the amount of revisions for this content type' checkboxes. Change the Maximum number of revisions to keep, if you need to, and finally, save your changes clicking in the Save content type button.") . '</p>';
 
       return $output;
+  }
+}
+
+/**
+ * Implements hook_preprocess_page().
+ */
+function node_revision_delete_preprocess_page(&$variables) {
+  $route_name = \Drupal::routeMatch()->getRouteName();
+  switch ($route_name) {
+    // Adding a css file to the Node Revision Delete Administration Page.
+    case 'node_revision_delete.admin_settings':
+      $variables['#attached']['library'][] = 'node_revision_delete/node_revision_delete';
+      break;
   }
 }

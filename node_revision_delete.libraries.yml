@@ -1,0 +1,5 @@
+node_revision_delete:
+  version: 1.x
+  css:
+    theme:
+      css/node_revision_delete.css: {}

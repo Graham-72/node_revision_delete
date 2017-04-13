@@ -6,7 +6,8 @@ use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\RendererInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use \Drupal\Core\Url;
+use Drupal\Core\Url;
+use Drupal\Core\Entity\EntityManagerInterface;
 
 /**
  * Class NodeRevisionDeleteAdminSettings.
@@ -23,10 +24,18 @@ class NodeRevisionDeleteAdminSettings extends ConfigFormBase {
   protected $renderer;
 
   /**
+   * Drupal\Core\Entity\EntityManagerInterface definition.
+   *
+   * @var Drupal\Core\Entity\EntityManagerInterface
+   */
+  protected $entityManager;
+
+  /**
    * {@inheritdoc}
    */
-  public function __construct(RendererInterface $renderer) {
+  public function __construct(RendererInterface $renderer, EntityManagerInterface $entity_manager) {
     $this->renderer = $renderer;
+    $this->entityManager = $entity_manager;
   }
 
   /**
@@ -34,7 +43,8 @@ class NodeRevisionDeleteAdminSettings extends ConfigFormBase {
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('renderer')
+      $container->get('renderer'),
+      $container->get('entity.manager')
     );
   }
 
@@ -75,7 +85,7 @@ class NodeRevisionDeleteAdminSettings extends ConfigFormBase {
     $node_revision_delete_track = $config->get('node_revision_delete_track');
 
     // Looking for all the content types.
-    $content_types = \Drupal::service('entity.manager')->getStorage('node_type')->loadMultiple();
+    $content_types = $this->entityManager->getStorage('node_type')->loadMultiple();
     foreach ($content_types as $content_type) {
       $route_parameters = ['node_type' => $content_type->id()];
       // Return to the same page after save the content type.
@@ -96,7 +106,7 @@ class NodeRevisionDeleteAdminSettings extends ConfigFormBase {
           // Action to delete the configuration for the content type.
           'delete' => [
             'title' => $this->t('Untrack'),
-            'url' => Url::fromUri('internal:/node/' . 1 . '/delete'),
+            'url' => Url::fromRoute('node_revision_delete.content_type_configuration_delete_confirm', ['content_type' => $content_type->id()]),
           ],
         ],
       ];

@@ -4,6 +4,7 @@
  * @file
  * Contains node_revision_delete.module.
  */
+
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Url;
 use Drupal\Core\Link;
@@ -35,8 +36,8 @@ function node_revision_delete_help($route_name, RouteMatchInterface $route_match
     case 'node_revision_delete.admin_settings':
       $output = '';
       $output .= '<p>' . t("To allow Node Revision Delete to act upon a certain content type, you should navigate to the desired content type's edit page via:") . '</p>';
-      $output .= '<em>' . t('Administration » Structure » Content types » [Content type name]') . '</em>';
-      $output .= '<p>' . t(" Under the Publishing Options tab, enable 'Create new revision' and 'Limit the amount of revisions for this content type' checkboxes. Change the Maximum number of revisions to keep, if you need to, and finally, save your changes clicking in the Save content type button.") . '</p>';
+      $output .= '<p><em>' . t('Administration » Structure » Content types » [Content type name]') . '</em></p>';
+      $output .= '<p>' . t("Under the Publishing Options tab, enable 'Create new revision' and 'Limit the amount of revisions for this content type' checkboxes. Change the Maximum number of revisions to keep, if you need to, and finally, save your changes clicking in the Save content type button.") . '</p>';
 
       return $output;
   }

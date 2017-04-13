@@ -43,8 +43,7 @@ class NodeRevisionDeleteAdminSettings extends ConfigFormBase {
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('renderer'),
-      $container->get('entity.manager')
+      $container->get('renderer'), $container->get('entity.manager')
     );
   }
 
@@ -76,7 +75,7 @@ class NodeRevisionDeleteAdminSettings extends ConfigFormBase {
       $this->t('Machine name'),
       $this->t('Revisions to keep'),
       $this->t('Candidate nodes'),
-      $this->t('Operations')
+      $this->t('Operations'),
     ];
     // Table rows.
     $rows = [];
@@ -103,17 +102,24 @@ class NodeRevisionDeleteAdminSettings extends ConfigFormBase {
             'title' => $this->t('Edit'),
             'url' => Url::fromRoute('entity.node_type.edit_form', $route_parameters, $options),
           ],
-          // Action to delete the configuration for the content type.
-          'delete' => [
-            'title' => $this->t('Untrack'),
-            'url' => Url::fromRoute('node_revision_delete.content_type_configuration_delete_confirm', ['content_type' => $content_type->id()]),
-          ],
         ],
       ];
+
+      // Searching the revisions to keep for each content type.
+      if (isset($node_revision_delete_track[$content_type->id()])) {
+        $revisions_to_keep = $node_revision_delete_track[$content_type->id()];
+        // Action to delete the configuration for the content type.
+        $dropdown['#links']['delete'] = [
+          'title' => $this->t('Untrack'),
+          'url' => Url::fromRoute('node_revision_delete.content_type_configuration_delete_confirm', ['content_type' => $content_type->id()]),
+        ];
+      }
+      else {
+        $revisions_to_keep = $this->t('Untracked');
+      }
+
       // Rendering the dropdown.
       $dropdown = $this->renderer->render($dropdown);
-      // Searching the revisions to keep for each content type.
-      $revisions_to_keep = isset($node_revision_delete_track[$content_type->id()]) ? $node_revision_delete_track[$content_type->id()] : $this->t('Untracked');
       // Setting the row values.
       $rows[] = [
         $content_type->label(),

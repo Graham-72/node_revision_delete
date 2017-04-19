@@ -4,6 +4,7 @@
  * @file
  * Contains node_revision_delete.module.
  */
+
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Url;
 use Drupal\Core\Link;
@@ -231,4 +232,14 @@ function _node_revision_delete_candidates($content_type, $revisions_to_keep) {
                      GROUP BY n.nid
                      HAVING count(n.nid) > :revisions_to_keep', $array);
   return $result->fetchCol();
+}
+
+/**
+ * Implements hook_library_info_alter().
+ */
+function node_revision_delete_library_info_alter(&$libraries, $extension) {
+  // Deleting the library because we have our own version.
+  if ($extension == 'node' && isset($libraries['drupal.content_types'])) {
+    unset($libraries['drupal.content_types']);
+  }
 }

@@ -93,10 +93,14 @@ function node_revision_delete_form_node_type_form_alter(&$form, FormStateInterfa
     ),
   );
 
-  // If we are creating the content type.
-  $form['actions']['save_continue']['#submit'][] = '_node_revision_delete_form_node_type_submit';
-  // If we are editing the content type.
-  $form['actions']['submit']['#submit'][] = '_node_revision_delete_form_node_type_submit';
+  // If we are creating the content type. Putting the custom submit handler
+  // first to use the Entity->isNew() function, if the custom submit handler is
+  // the last function called always the Entity is created first.
+  array_unshift($form['actions']['save_continue']['#submit'], '_node_revision_delete_form_node_type_submit');
+  // If we are editing the content type. Putting the custom submit handler
+  // first to use the Entity->isNew() function, if the custom submit handler is
+  // the last function called always the Entity is created first.
+  array_unshift($form['actions']['submit']['#submit'], '_node_revision_delete_form_node_type_submit');
 }
 
 /**
@@ -109,27 +113,53 @@ function node_revision_delete_form_node_type_form_alter(&$form, FormStateInterfa
  */
 function _node_revision_delete_form_node_type_submit(array &$form, FormStateInterface $form_state) {
   $track = $form_state->getValue('node_revision_delete_track');
-  $number = $form_state->getValue('node_revision_delete_number');
+  $revisions_to_keep = $form_state->getValue('node_revision_delete_number');
+  // Getting the content type machine name.
+  $content_type = $form_state->getFormObject()->getEntity()->id();
   // If we will track the content type.
   if ($track) {
-    // Getting the config file.
-    $config = \Drupal::service('config.factory')->getEditable('node_revision_delete.settings');
-    // Getting the variables with the content types configuration.
-    $node_revision_delete_track = $config->get('node_revision_delete_track');
-    // Getting the content type machine name.
-    $content_type = $form_state->getFormObject()->getEntity()->id();
-    // Adding the values in the array.
-    $node_revision_delete_track[$content_type] = $number;
-    // Saving the values in the configuration.
-    $config->set('node_revision_delete_track', $node_revision_delete_track)
-      ->save();
+    // Saving the values in the config.
+    _node_revision_delete_save_content_type_config($content_type, $revisions_to_keep);
   }
+  // If the content type is new we don't need to delete anything.
+  elseif (!$form_state->getFormObject()->getEntity()->isNew()) {
+    // Deleting the value from the config.
+    _node_revision_delete_delete_content_type_config($content_type);
+  }
+}
+
+/**
+ * Save the content type config variable.
+ *
+ * @param string $content_type
+ *   Content type machine name.
+ * @param int $revisions_to_keep
+ *   Number of revisions to keep.
+ *
+ * @return bool
+ *   Return TRUE if the content type config was saved or FALSE if exists.
+ */
+function _node_revision_delete_save_content_type_config($content_type, $revisions_to_keep) {
+  // Getting the config file.
+  $config = \Drupal::service('config.factory')->getEditable('node_revision_delete.settings');
+  // Getting the variables with the content types configuration.
+  $node_revision_delete_track = $config->get('node_revision_delete_track');
+  // Checking if the config exists.
+  if (!isset($node_revision_delete_track[$content_type])) {
+    // Adding the values in the array.
+    $node_revision_delete_track[$content_type] = $revisions_to_keep;
+    // Saving the values in the config.
+    $config->set('node_revision_delete_track', $node_revision_delete_track)->save();
+    return TRUE;
+  }
+  return FALSE;
 }
 
 /**
  * Implements hook_form_FORM_ID_alter().
  */
 function node_revision_delete_form_node_type_delete_form_alter(&$form, FormStateInterface &$form_state, $form_id) {
+  // If we are deleting a content type.
   $form['actions']['submit']['#submit'][] = '_node_revision_delete_form_node_type_delete';
 }
 
@@ -142,41 +172,61 @@ function node_revision_delete_form_node_type_delete_form_alter(&$form, FormState
  *   The form state.
  */
 function _node_revision_delete_form_node_type_delete(array &$form, FormStateInterface $form_state) {
+  // Getting the content type machine name.
+  $content_type = $form_state->getFormObject()->getEntity()->id();
+  // Deleting the value from the config.
+  _node_revision_delete_delete_content_type_config($content_type);
+}
+
+/**
+ * Delete the content type config variable.
+ *
+ * @param string $content_type
+ *   Content type machine name.
+ *
+ * @return bool
+ *   Return TRUE if the content type config was deleted or FALSE if not exists.
+ */
+function _node_revision_delete_delete_content_type_config($content_type) {
   // Getting the config file.
   $config = \Drupal::service('config.factory')->getEditable('node_revision_delete.settings');
   // Getting the variables with the content types configuration.
   $node_revision_delete_track = $config->get('node_revision_delete_track');
-  // Getting the content type machine name.
-  $content_type = $form_state->getFormObject()->getEntity()->id();
-  // Adding the values in the array.
-  unset($node_revision_delete_track[$content_type]);
-  // Saving the values in the configuration.
-  $config->set('node_revision_delete_track', $node_revision_delete_track)
-    ->save();
+  // Checking if the config exists.
+  if (isset($node_revision_delete_track[$content_type])) {
+    // Deleting the value from the array.
+    unset($node_revision_delete_track[$content_type]);
+    // Saving the values in the config.
+    $config->set('node_revision_delete_track', $node_revision_delete_track)->save();
+    return TRUE;
+  }
+  return FALSE;
 }
 
 /**
- * Helper function to return the list of candidate nodes.
+ * Return the list of candidate nodes for node revision delete.
  *
  * @param string $content_type
- *   A content type machine name.
- * @param int $max_revisions
- *   Match nodes with a total amount of revisions higher than this number.
+ *   Content type machine name.
+ * @param int $revisions_to_keep
+ *   Maximum number of revisions to keep.
  *
  * @return array
- *   Array of total of nodes with revisions keyed by nids.
+ *   Array of nids.
  */
-function _node_revision_delete_candidates($content_type, $max_revisions) {
+function _node_revision_delete_candidates($content_type, $revisions_to_keep) {
   $connection = \Drupal::service('database');
+  // Array with sustitution values.
+  $array = [
+    ':content_type' => $content_type,
+    ':revisions_to_keep' => $revisions_to_keep,
+  ];
+
   $result = $connection->query('SELECT n.nid, count(n.nid) as total
                      FROM node n
                      INNER JOIN node_revision r ON r.nid = n.nid
                      WHERE n.type = :content_type
                      GROUP BY n.nid
-                     HAVING count(n.nid) > :max_revisions',
-                     [
-                       ':content_type' => $content_type,
-                       ':max_revisions' => $max_revisions,
-                     ]);
+                     HAVING count(n.nid) > :revisions_to_keep', $array);
   return $result->fetchCol();
 }

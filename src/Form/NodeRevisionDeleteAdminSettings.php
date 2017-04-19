@@ -107,7 +107,10 @@ class NodeRevisionDeleteAdminSettings extends ConfigFormBase {
 
       // Searching the revisions to keep for each content type.
       if (isset($node_revision_delete_track[$content_type->id()])) {
+        // Revisions to keep in the database.
         $revisions_to_keep = $node_revision_delete_track[$content_type->id()];
+        // Number of candidates nodes to delete theirs revision.
+        $candidate_nodes = count(_node_revision_delete_candidates($content_type->id(), $revisions_to_keep));
         // Action to delete the configuration for the content type.
         $dropdown['#links']['delete'] = [
           'title' => $this->t('Untrack'),
@@ -116,6 +119,7 @@ class NodeRevisionDeleteAdminSettings extends ConfigFormBase {
       }
       else {
         $revisions_to_keep = $this->t('Untracked');
+        $candidate_nodes = '-';
       }
 
       // Rendering the dropdown.
@@ -125,7 +129,7 @@ class NodeRevisionDeleteAdminSettings extends ConfigFormBase {
         $content_type->label(),
         $content_type->id(),
         $revisions_to_keep,
-        4,
+        $candidate_nodes,
         $dropdown,
       ];
     }

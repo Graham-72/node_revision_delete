@@ -4,6 +4,7 @@
  * @file
  * Contains node_revision_delete.module.
  */
+
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Url;
 use Drupal\Core\Link;
@@ -57,7 +58,7 @@ function node_revision_delete_preprocess_page(&$variables) {
 }
 
 /**
- * Implements hook_form_BASE_FORM_ID_alter() hook.
+ * Implements hook_form_BASE_FORM_ID_alter().
  */
 function node_revision_delete_form_node_type_form_alter(&$form, FormStateInterface &$form_state, $form_id) {
   $node_revision_delete_track = \Drupal::config('node_revision_delete.settings')->get('node_revision_delete_track');
@@ -152,4 +153,30 @@ function _node_revision_delete_form_node_type_delete(array &$form, FormStateInte
   // Saving the values in the configuration.
   $config->set('node_revision_delete_track', $node_revision_delete_track)
     ->save();
+}
+
+/**
+ * Helper function to return the list of candidate nodes.
+ *
+ * @param string $content_type
+ *   A content type machine name.
+ * @param int $max_revisions
+ *   Match nodes with a total amount of revisions higher than this number.
+ *
+ * @return array
+ *   Array of total of nodes with revisions keyed by nids.
+ */
+function _node_revision_delete_candidates($content_type, $max_revisions) {
+  $connection = \Drupal::service('database');
+  $result = $connection->query('SELECT n.nid, count(n.nid) as total
+                     FROM node n
+                     INNER JOIN node_revision r ON r.nid = n.nid
+                     WHERE n.type = :content_type
+                     GROUP BY n.nid
+                     HAVING count(n.nid) > :max_revisions',
+                     [
+                       ':content_type' => $content_type,
+                       ':max_revisions' => $max_revisions,
+                     ]);
+  return $result->fetchCol();
 }

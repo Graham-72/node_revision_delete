@@ -16,6 +16,7 @@ function node_revision_delete_drush_command() {
     ),
     'aliases' => array('ndr-dcr'),
     'examples' => array(
+      'ndr-delete-cron-run' => dt("Show how many revisions the module will delete per cron run."),
       'ndr-delete-cron-run 50' => dt("Configure the module to delete 50 revisions per cron run."),
     ),
   );
@@ -48,7 +49,7 @@ function drush_node_revision_delete_ndr_delete_cron_run_validate() {
   }
 
   // Check for integer quantity.
-  if (!ctype_digit($args[0])) {
+  if (isset($args[0]) && !ctype_digit($args[0])) {
     drush_set_error('DRUSH_NODE_REVISION_DELETE_ERROR', dt('You must specify digits for the quantity'));
     return;
   }
@@ -61,11 +62,20 @@ function drush_node_revision_delete_ndr_delete_cron_run() {
   $args = func_get_args();
   // Getting an editable config because we will get and set a value.
   $config = \Drupal::service('config.factory')->getEditable('node_revision_delete.settings');
-  // Saving the values in the config.
-  $config->set('node_revision_delete_cron', $args[0]);
-  $config->save();
 
-  $message = dt('The module was configurated to delete @revisions revisions per cron run.', ['@revisions' => $args[0]]);
+  if (isset($args[0])) {
+    // Saving the values in the config.
+    $config->set('node_revision_delete_cron', $args[0]);
+    $config->save();
+
+    $message = dt('The module was configurated to delete @revisions revisions per cron run.', ['@revisions' => $args[0]]);
+  }
+  else {
+    // Getting the values from the config.
+    $revisions = $config->get('node_revision_delete_cron');
+    $message = dt('The quantity of revisions to delete per cron run is: @revisions.', ['@revisions' => $revisions]);
+  }
+
   drush_log($message, 'success');
 }
 

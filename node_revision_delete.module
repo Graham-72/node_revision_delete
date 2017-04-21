@@ -239,6 +239,8 @@ function _node_revision_delete_candidates($content_type, $revisions_to_keep) {
  */
 function node_revision_delete_library_info_alter(&$libraries, $extension) {
   // Deleting the library because we have our own version.
+  // Maybe this cannot be longer needed once https://www.drupal.org/node/2871619
+  // will be fixed.
   if ($extension == 'node' && isset($libraries['drupal.content_types'])) {
     unset($libraries['drupal.content_types']);
   }

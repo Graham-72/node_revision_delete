@@ -1,4 +1,3 @@
-
 node_revision_delete.admin_settings:
   path: 'admin/config/content/node_revision_delete'
   defaults:

@@ -6,20 +6,12 @@ use Drupal\Core\Form\ConfirmFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Url;
-use Drupal\Core\Config\ConfigFactory;
 use Drupal\Core\Entity\EntityManagerInterface;
 
 /**
  * Provides a content type configuration deletion confirmation form.
  */
 class ContentTypeConfigurationDeleteForm extends ConfirmFormBase {
-
-  /**
-   * Drupal\Core\Config\ConfigFactory definition.
-   *
-   * @var \Drupal\Core\Config\ConfigFactory
-   */
-  protected $configFactory;
 
   /**
    * Drupal\Core\Entity\EntityManagerInterface definition.
@@ -38,8 +30,7 @@ class ContentTypeConfigurationDeleteForm extends ConfirmFormBase {
   /**
    * {@inheritdoc}
    */
-  public function __construct(ConfigFactory $config_factory, EntityManagerInterface $entity_manager) {
-    $this->configFactory = $config_factory;
+  public function __construct(EntityManagerInterface $entity_manager) {
     $this->entityManager = $entity_manager;
   }
 
@@ -47,10 +38,7 @@ class ContentTypeConfigurationDeleteForm extends ConfirmFormBase {
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container) {
-    return new static(
-      $container->get('config.factory'),
-      $container->get('entity.manager')
-    );
+    return new static($container->get('entity.manager'));
   }
 
   /**
@@ -109,14 +97,8 @@ class ContentTypeConfigurationDeleteForm extends ConfirmFormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    $node_revision_delete_track = $this->configFactory->get('node_revision_delete.settings')->get('node_revision_delete_track');
-
-    if (array_key_exists($this->contentType->id(), $node_revision_delete_track)) {
-      unset($node_revision_delete_track[$this->contentType->id()]);
-      $this->configFactory->getEditable('node_revision_delete.settings')
-        ->set('node_revision_delete_track', $node_revision_delete_track)
-        ->save();
-    }
+    // Deleting the content type configuration.
+    _node_revision_delete_delete_content_type_config($this->contentType->id());
 
     drupal_set_message($this->t('The Node Revision Delete configuration for the "@content_type" content type has been deleted.', ['@content_type' => $this->contentType->label()]));
     $form_state->setRedirectUrl($this->getCancelUrl());

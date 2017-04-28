@@ -17,3 +17,9 @@ node_revision_delete.settings:
       sequence:
         type: integer
         label: 'Number of revisions to keep'
+    node_revision_delete_when_to_delete:
+      type: sequence
+      label: 'List with the number of months to review for revision deletion for each content type'
+      sequence:
+        type: integer
+        label: 'Number of months to review for revision deletion'

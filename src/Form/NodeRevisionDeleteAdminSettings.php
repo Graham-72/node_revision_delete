@@ -74,14 +74,15 @@ class NodeRevisionDeleteAdminSettings extends ConfigFormBase {
       $this->t('Content type'),
       $this->t('Machine name'),
       $this->t('Revisions to keep'),
+      $this->t('When to delete'),
       $this->t('Candidate nodes'),
       $this->t('Operations'),
     ];
     // Table rows.
     $rows = [];
-    // Searching the list with the maximum number of revisions to keep for each
-    // content_type.
+    // Getting the config variables.
     $node_revision_delete_track = $config->get('node_revision_delete_track');
+    $node_revision_delete_when_to_delete = $config->get('node_revision_delete_when_to_delete');
 
     // Looking for all the content types.
     $content_types = $this->entityManager->getStorage('node_type')->loadMultiple();
@@ -109,6 +110,14 @@ class NodeRevisionDeleteAdminSettings extends ConfigFormBase {
       if (isset($node_revision_delete_track[$content_type->id()])) {
         // Revisions to keep in the database.
         $revisions_to_keep = $node_revision_delete_track[$content_type->id()];
+        // When to delete time (is a number, 0 for always).
+        $when_to_delete_number = $node_revision_delete_when_to_delete[$content_type->id()];
+
+        $singular = 'After @number month of inactivity';
+        $plural = 'After @number months of inactivity';
+        $when_to_delete = \Drupal::translation()->formatPlural($when_to_delete_number, $singular, $plural, ['@number' => $when_to_delete_number]);
+        $when_to_delete = (bool) $when_to_delete_number ? $when_to_delete : $this->t('Always delete');
+
         // Number of candidates nodes to delete theirs revision.
         $candidate_nodes = count(_node_revision_delete_candidates($content_type->id(), $revisions_to_keep));
         // Action to delete the configuration for the content type.
@@ -120,6 +129,7 @@ class NodeRevisionDeleteAdminSettings extends ConfigFormBase {
       else {
         $revisions_to_keep = $this->t('Untracked');
         $candidate_nodes = '-';
+        $when_to_delete = $this->t('Untracked');
       }
 
       // Rendering the dropdown.
@@ -129,6 +139,7 @@ class NodeRevisionDeleteAdminSettings extends ConfigFormBase {
         $content_type->label(),
         $content_type->id(),
         $revisions_to_keep,
+        $when_to_delete,
         $candidate_nodes,
         $dropdown,
       ];

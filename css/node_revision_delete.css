@@ -1,3 +1,8 @@
 table caption {
   font-weight: bold;
 }
+
+div.form-item-node-revision-delete-number,
+div.form-item-node-revision-delete-when-to-delete {
+  margin-left: 15px;
+}

@@ -2,3 +2,4 @@ node_revision_delete_cron: 50
 node_revision_delete_last_execute: 0
 node_revision_delete_time: 'never'
 node_revision_delete_track: {}
+node_revision_delete_when_to_delete: {}

@@ -75,6 +75,7 @@ class NodeRevisionDeleteAdminSettings extends ConfigFormBase {
       $this->t('Machine name'),
       $this->t('Revisions to keep'),
       $this->t('When to delete'),
+      $this->t('Minumum age'),
       $this->t('Candidate nodes'),
       $this->t('Operations'),
     ];
@@ -140,6 +141,7 @@ class NodeRevisionDeleteAdminSettings extends ConfigFormBase {
         $content_type->id(),
         $revisions_to_keep,
         $when_to_delete,
+        1,
         $candidate_nodes,
         $dropdown,
       ];
@@ -188,6 +190,7 @@ class NodeRevisionDeleteAdminSettings extends ConfigFormBase {
       '#options' => $options_node_revision_delete_time,
       '#size' => 1,
       '#default_value' => $config->get('node_revision_delete_time'),
+      '#description' => $this->t('Frequency of the scheduled mass revision deletion.'),
     ];
     // Providing the option to run now the batch job.
     $form['run_now'] = [

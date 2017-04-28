@@ -11,7 +11,8 @@ use Drupal\Core\Link;
 use Drupal\Core\Form\FormStateInterface;
 
 // The maximun months for the 'When to delete' config.
-define('NODE_REVISION_DELETE_MAXIMUN_MONTHS', 12);
+define('NODE_REVISION_DELETE_WHEN_TO_DELETE_MAXIMUN_MONTHS', 12);
+define('NODE_REVISION_DELETE_MINIMUN_AGE_TO_DELETE_MAXIMUN_MONTHS', 12);
 
 /**
  * Implements hook_help().
@@ -75,11 +76,13 @@ function node_revision_delete_form_node_type_form_alter(&$form, FormStateInterfa
     $track = TRUE;
     $number = $node_revision_delete_track[$content_type];
     $when_to_delete = $config->get('node_revision_delete_when_to_delete');
+    $minimun_age_to_delete = $config->get('node_revision_delete_when_to_delete');
   }
   else {
     $track = FALSE;
     $number = 1;
     $when_to_delete = 0;
+    $minimun_age_to_delete = 0;
   }
   // Element to track the content type.
   $form['workflow']['node_revision_delete_track'] = [
@@ -109,8 +112,8 @@ function node_revision_delete_form_node_type_form_alter(&$form, FormStateInterfa
   ];
 
   // Available options for node_revision_delete_when_to_delete variable.
-  $options_node_revision_delete_when_to_delete[0] = t('Always delete');
-  for ($i = 1; $i <= NODE_REVISION_DELETE_MAXIMUN_MONTHS; $i++) {
+  $options_node_revision_delete_when_to_delete[0] = t('Always');
+  for ($i = 1; $i <= NODE_REVISION_DELETE_WHEN_TO_DELETE_MAXIMUN_MONTHS; $i++) {
     $singular = 'After @number month of inactivity';
     $plural = 'After @number months of inactivity';
     $options_node_revision_delete_when_to_delete[$i] = \Drupal::translation()->formatPlural($i, $singular, $plural, ['@number' => $i]);
@@ -119,10 +122,33 @@ function node_revision_delete_form_node_type_form_alter(&$form, FormStateInterfa
   $form['workflow']['node_revision_delete_when_to_delete'] = [
     '#type' => 'select',
     '#title' => t('When to delete'),
-    '#description' => t('Message******'),
+    '#description' => t('If the current revision is not older than specified here, its older revisions will not be deleted, even if they are old enough. If set to "Always", older revisions will be deleted regardless of the age of the current revision.'),
     '#options' => $options_node_revision_delete_when_to_delete,
     '#size' => 1,
     '#default_value' => $when_to_delete,
+    '#states' => [
+      // Hide the settings when the cancel notify checkbox is disabled.
+      'visible' => [
+        ':input[name="node_revision_delete_track"]' => array('checked' => TRUE),
+      ],
+    ],
+  ];
+
+  // Available options for node_revision_delete_minimun_age_to_delete.
+  $options_node_revision_delete_minimun_age_to_delete[0] = t('None');
+  for ($i = 1; $i <= NODE_REVISION_DELETE_MINIMUN_AGE_TO_DELETE_MAXIMUN_MONTHS; $i++) {
+    $singular = '@number month';
+    $plural = '@number months';
+    $options_node_revision_delete_minimun_age_to_delete[$i] = \Drupal::translation()->formatPlural($i, $singular, $plural, ['@number' => $i]);
+  }
+  // Element to know when to delete the revisions.
+  $form['workflow']['node_revision_delete_minimun_age_to_delete'] = [
+    '#type' => 'select',
+    '#title' => t('Minimum age of revision to delete'),
+    '#description' => t('Revisions older of this age will be deleted. "If the Maximum number of revisions to keep" is greater than 1 we will keep this number of revision after the "Minimum age of revision to delete" including the revision that have the selected age.'),
+    '#options' => $options_node_revision_delete_minimun_age_to_delete,
+    '#size' => 1,
+    '#default_value' => $when_to_delete, //After the new config change this value to $minimun_age_to_delete.
     '#states' => [
       // Hide the settings when the cancel notify checkbox is disabled.
       'visible' => [

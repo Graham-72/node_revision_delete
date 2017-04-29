@@ -75,7 +75,7 @@ class NodeRevisionDeleteAdminSettings extends ConfigFormBase {
       $this->t('Machine name'),
       $this->t('Revisions to keep'),
       $this->t('When to delete'),
-      $this->t('Minumum age'),
+      $this->t('Minimum age'),
       $this->t('Candidate nodes'),
       $this->t('Operations'),
     ];
@@ -110,14 +110,20 @@ class NodeRevisionDeleteAdminSettings extends ConfigFormBase {
       // Searching the revisions to keep for each content type.
       if (isset($node_revision_delete_track[$content_type->id()])) {
         // Revisions to keep in the database.
-        $revisions_to_keep = $node_revision_delete_track[$content_type->id()];
+        $revisions_to_keep = $node_revision_delete_track[$content_type->id()]['revisions_to_keep'];
         // When to delete time (is a number, 0 for always).
-        $when_to_delete_number = $node_revision_delete_when_to_delete[$content_type->id()];
-
+        $when_to_delete_number = $node_revision_delete_track[$content_type->id()]['when_to_delete'];
         $singular = 'After @number month of inactivity';
         $plural = 'After @number months of inactivity';
         $when_to_delete = \Drupal::translation()->formatPlural($when_to_delete_number, $singular, $plural, ['@number' => $when_to_delete_number]);
         $when_to_delete = (bool) $when_to_delete_number ? $when_to_delete : $this->t('Always delete');
+
+        // Minimun age to delete (is a number, 0 for none).
+        $minimun_age_to_delete_number = $node_revision_delete_track[$content_type->id()]['minimun_age_to_delete'];
+        $singular = '@number month';
+        $plural = '@number months';
+        $minimun_age_to_delete = \Drupal::translation()->formatPlural($minimun_age_to_delete_number, $singular, $plural, ['@number' => $minimun_age_to_delete_number]);
+        $minimun_age_to_delete = (bool) $minimun_age_to_delete_number ? $minimun_age_to_delete : $this->t('None');
 
         // Number of candidates nodes to delete theirs revision.
         $candidate_nodes = count(_node_revision_delete_candidates($content_type->id(), $revisions_to_keep));
@@ -131,6 +137,7 @@ class NodeRevisionDeleteAdminSettings extends ConfigFormBase {
         $revisions_to_keep = $this->t('Untracked');
         $candidate_nodes = '-';
         $when_to_delete = $this->t('Untracked');
+        $minimun_age_to_delete = $this->t('Untracked');
       }
 
       // Rendering the dropdown.
@@ -141,7 +148,7 @@ class NodeRevisionDeleteAdminSettings extends ConfigFormBase {
         $content_type->id(),
         $revisions_to_keep,
         $when_to_delete,
-        1,
+        $minimun_age_to_delete,
         $candidate_nodes,
         $dropdown,
       ];

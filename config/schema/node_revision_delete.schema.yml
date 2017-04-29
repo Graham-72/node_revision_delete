@@ -13,13 +13,16 @@ node_revision_delete.settings:
       label: 'Frequency with which to delete revisions while cron is running'
     node_revision_delete_track:
       type: sequence
-      label: 'List with the maximum number of revisions to keep for each content_type'
+      label: 'Configuration for each content_type'
       sequence:
-        type: integer
-        label: 'Number of revisions to keep'
-    node_revision_delete_when_to_delete:
-      type: sequence
-      label: 'List with the number of months to review for revision deletion for each content type'
-      sequence:
-        type: integer
-        label: 'Number of months to review for revision deletion'
+        type: mapping
+        mapping:
+          revisions_to_keep:
+            type: integer
+            label: 'Maximun number of revisions to keep'
+          when_to_delete:
+            type: integer
+            label: 'Number of inactivity months to wait for delete a revision'
+          minimun_age_to_delete:
+            type: integer
+            label: 'Minimum age in months of revision to delete'

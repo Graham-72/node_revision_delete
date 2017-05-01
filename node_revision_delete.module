@@ -4,15 +4,26 @@
  * @file
  * Contains node_revision_delete.module.
  */
-
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Url;
 use Drupal\Core\Link;
 use Drupal\Core\Form\FormStateInterface;
 
-// The maximun months for the 'When to delete' config.
-define('NODE_REVISION_DELETE_WHEN_TO_DELETE_MAXIMUN_MONTHS', 12);
-define('NODE_REVISION_DELETE_MINIMUN_AGE_TO_DELETE_MAXIMUN_MONTHS', 12);
+// Time options.
+const TIME_OPTIONS = [
+  'days' => [
+    'singular' => 'day',
+    'plural' => 'days',
+  ],
+  'weeks' => [
+    'singular' => 'week',
+    'plural' => 'weeks',
+  ],
+  'months' => [
+    'singular' => 'month',
+    'plural' => 'months',
+  ],
+];
 
 /**
  * Implements hook_help().
@@ -110,13 +121,13 @@ function node_revision_delete_form_node_type_form_alter(&$form, FormStateInterfa
       ],
     ],
   ];
-
+  // Getting the max number for node_revision_delete_when_to_delete_time.
+  $node_revision_delete_when_to_delete_time_max_number = $config->get('node_revision_delete_when_to_delete_time')['max_number'];
   // Available options for node_revision_delete_when_to_delete variable.
   $options_node_revision_delete_when_to_delete[0] = t('Always');
-  for ($i = 1; $i <= NODE_REVISION_DELETE_WHEN_TO_DELETE_MAXIMUN_MONTHS; $i++) {
-    $singular = 'After @number month of inactivity';
-    $plural = 'After @number months of inactivity';
-    $options_node_revision_delete_when_to_delete[$i] = \Drupal::translation()->formatPlural($i, $singular, $plural, ['@number' => $i]);
+  for ($i = 1; $i <= $node_revision_delete_when_to_delete_time_max_number; $i++) {
+    // Creating the time string.
+    $options_node_revision_delete_when_to_delete[$i] = _node_revision_delete_when_to_delete_time_string($i);
   }
   // Element to know when to delete the revisions.
   $form['workflow']['node_revision_delete_when_to_delete'] = [
@@ -133,13 +144,12 @@ function node_revision_delete_form_node_type_form_alter(&$form, FormStateInterfa
       ],
     ],
   ];
-
+  // Getting the max number for node_revision_delete_minimun_age_to_delete_time.
+  $node_revision_delete_minimun_age_to_delete_time_max_number = $config->get('node_revision_delete_minimun_age_to_delete_time')['max_number'];
   // Available options for node_revision_delete_minimun_age_to_delete.
   $options_node_revision_delete_minimun_age_to_delete[0] = t('None');
-  for ($i = 1; $i <= NODE_REVISION_DELETE_MINIMUN_AGE_TO_DELETE_MAXIMUN_MONTHS; $i++) {
-    $singular = '@number month';
-    $plural = '@number months';
-    $options_node_revision_delete_minimun_age_to_delete[$i] = \Drupal::translation()->formatPlural($i, $singular, $plural, ['@number' => $i]);
+  for ($i = 1; $i <= $node_revision_delete_minimun_age_to_delete_time_max_number; $i++) {
+    $options_node_revision_delete_minimun_age_to_delete[$i] = _node_revision_delete_minimun_age_to_delete_string($i);
   }
   // Element to know when to delete the revisions.
   $form['workflow']['node_revision_delete_minimun_age_to_delete'] = [
@@ -311,4 +321,42 @@ function node_revision_delete_library_info_alter(&$libraries, $extension) {
   if ($extension == 'node' && isset($libraries['drupal.content_types'])) {
     unset($libraries['drupal.content_types']);
   }
+}
+
+/**
+ * Return the string for the 'When to delete' option.
+ *
+ * @param int $number
+ *   The number for the when_to_delete configuration.
+ *
+ * @return string
+ *   The string for the 'When to delete' option.
+ */
+function _node_revision_delete_when_to_delete_time_string($number) {
+  // Geting the config.
+  $config = \Drupal::config('node_revision_delete.settings');
+  $node_revision_delete_when_to_delete_time = $config->get('node_revision_delete_when_to_delete_time');
+  $time_singular = TIME_OPTIONS[$node_revision_delete_when_to_delete_time['time']]['singular'];
+  $time_plural = TIME_OPTIONS[$node_revision_delete_when_to_delete_time['time']]['plural'];
+  $time = $number == 1 ? $time_singular : $time_plural;
+  return t('After @number @time of inactivity', ['@number' => $number, '@time' => $time]);
+}
+
+/**
+ * Return the string for the 'Minimum age of revision to delete' option.
+ *
+ * @param int $number
+ *   The number for the minimun_age_to_delete configuration.
+ *
+ * @return string
+ *   The string for the 'Minimum age of revision to delete' option.
+ */
+function _node_revision_delete_minimun_age_to_delete_string($number) {
+  // Geting the config.
+  $config = \Drupal::config('node_revision_delete.settings');
+  $node_revision_delete_minimun_age_to_delete_time = $config->get('node_revision_delete_minimun_age_to_delete_time');
+  $time_singular = TIME_OPTIONS[$node_revision_delete_minimun_age_to_delete_time['time']]['singular'];
+  $time_plural = TIME_OPTIONS[$node_revision_delete_minimun_age_to_delete_time['time']]['plural'];
+  $time = $number == 1 ? $time_singular : $time_plural;
+  return t('@number @time', ['@number' => $number, '@time' => $time]);
 }

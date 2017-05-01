@@ -5,4 +5,6 @@ package: Content
 type: module
 core: 8.x
 
+php: 5.6
+
 configure: node_revision_delete.admin_settings

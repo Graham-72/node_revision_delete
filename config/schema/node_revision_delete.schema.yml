@@ -11,6 +11,24 @@ node_revision_delete.settings:
     node_revision_delete_time:
       type: string
       label: 'Frequency with which to delete revisions while cron is running'
+    node_revision_delete_when_to_delete_time:
+      type: mapping
+      mapping:
+        max_number:
+          type: integer
+          label: 'The maximun number for when_to_delete configuration'
+        time:
+          type: string
+          label: 'The time value for when_to_delete configuration (days, weeks or months)'
+    node_revision_delete_minimun_age_to_delete_time:
+      type: mapping
+      mapping:
+        max_number:
+          type: integer
+          label: The maximun number for minimun_age_to_delete configuration'
+        time:
+          type: string
+          label: 'The time value for when_to_delete configuration (days, weeks or months)'
     node_revision_delete_track:
       type: sequence
       label: 'Configuration for each content_type'

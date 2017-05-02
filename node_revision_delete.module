@@ -124,17 +124,17 @@ function node_revision_delete_form_node_type_form_alter(&$form, FormStateInterfa
   ];
   // Getting the max number for node_revision_delete_minimun_age_to_delete_time.
   $node_revision_delete_minimun_age_to_delete_time_max_number = $config->get('node_revision_delete_minimun_age_to_delete_time')['max_number'];
-  // Available options for node_revision_delete_minimun_age_to_delete.
-  $options_node_revision_delete_minimun_age_to_delete[0] = t('None');
+  // Available options for minimun_age_to_delete.
+  $options_minimun_age_to_delete[0] = t('None');
   for ($i = 1; $i <= $node_revision_delete_minimun_age_to_delete_time_max_number; $i++) {
-    $options_node_revision_delete_minimun_age_to_delete[$i] = _node_revision_delete_minimun_age_to_delete_string($i);
+    $options_minimun_age_to_delete[$i] = _node_revision_delete_minimun_age_to_delete_string($i);
   }
   // Element to know when to delete the revisions.
-  $form['workflow']['node_revision_delete_minimun_age_to_delete'] = [
+  $form['workflow']['minimun_age_to_delete'] = [
     '#type' => 'select',
     '#title' => t('Minimum age of revisions to delete'),
     '#description' => t('Revisions older of this age will be deleted, but just only after the "Minimum number of revisions to keep" will be reached. If you don\'t want to take in count the age of the revisions, set to "None".'),
-    '#options' => $options_node_revision_delete_minimun_age_to_delete,
+    '#options' => $options_minimun_age_to_delete,
     '#size' => 1,
     '#default_value' => $minimun_age_to_delete,
     '#states' => [
@@ -146,18 +146,18 @@ function node_revision_delete_form_node_type_form_alter(&$form, FormStateInterfa
   ];
   // Getting the max number for node_revision_delete_when_to_delete_time.
   $node_revision_delete_when_to_delete_time_max_number = $config->get('node_revision_delete_when_to_delete_time')['max_number'];
-  // Available options for node_revision_delete_when_to_delete variable.
-  $options_node_revision_delete_when_to_delete[0] = t('Always');
+  // Available options for when_to_delete variable.
+  $options_when_to_delete[0] = t('Always');
   for ($i = 1; $i <= $node_revision_delete_when_to_delete_time_max_number; $i++) {
     // Creating the time string.
-    $options_node_revision_delete_when_to_delete[$i] = _node_revision_delete_when_to_delete_time_string($i);
+    $options_when_to_delete[$i] = _node_revision_delete_when_to_delete_time_string($i);
   }
   // Element to know when to delete the revisions.
-  $form['workflow']['node_revision_delete_when_to_delete'] = [
+  $form['workflow']['when_to_delete'] = [
     '#type' => 'select',
     '#title' => t('When to delete'),
     '#description' => t('If the current revision is not older than specified here, its older revisions will not be deleted, even if they are old enough. If set to "Always", older revisions will be deleted regardless of the age of the current revision.'),
-    '#options' => $options_node_revision_delete_when_to_delete,
+    '#options' => $options_when_to_delete,
     '#size' => 1,
     '#default_value' => $when_to_delete,
     '#states' => [
@@ -195,8 +195,8 @@ function _node_revision_delete_form_node_type_submit(array &$form, FormStateInte
   if ($track) {
     // Getting the form values.
     $minimum_revisions_to_keep = $form_state->getValue('minimum_revisions_to_keep');
-    $when_to_delete = $form_state->getValue('node_revision_delete_when_to_delete');
-    $minimun_age_to_delete = $form_state->getValue('node_revision_delete_minimun_age_to_delete');
+    $when_to_delete = $form_state->getValue('when_to_delete');
+    $minimun_age_to_delete = $form_state->getValue('minimun_age_to_delete');
     // Saving the values in the config.
     _node_revision_delete_save_content_type_config($content_type, $minimum_revisions_to_keep, $when_to_delete, $minimun_age_to_delete);
   }

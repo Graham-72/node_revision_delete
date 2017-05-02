@@ -35,9 +35,9 @@ node_revision_delete.settings:
       sequence:
         type: mapping
         mapping:
-          revisions_to_keep:
+          minimum_revisions_to_keep:
             type: integer
-            label: 'Maximun number of revisions to keep'
+            label: 'Minimum number of revisions to keep'
           when_to_delete:
             type: integer
             label: 'Number of inactivity months to wait for delete a revision'

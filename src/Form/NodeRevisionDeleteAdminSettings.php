@@ -73,9 +73,9 @@ class NodeRevisionDeleteAdminSettings extends ConfigFormBase {
     $header = [
       $this->t('Content type'),
       $this->t('Machine name'),
-      $this->t('Revisions to keep'),
-      $this->t('When to delete'),
+      $this->t('Minimum to keep'),
       $this->t('Minimum age'),
+      $this->t('When to delete'),
       $this->t('Candidate nodes'),
       $this->t('Operations'),
     ];
@@ -83,8 +83,6 @@ class NodeRevisionDeleteAdminSettings extends ConfigFormBase {
     $rows = [];
     // Getting the config variables.
     $node_revision_delete_track = $config->get('node_revision_delete_track');
-    $node_revision_delete_when_to_delete = $config->get('node_revision_delete_when_to_delete');
-
     // Looking for all the content types.
     $content_types = $this->entityManager->getStorage('node_type')->loadMultiple();
     foreach ($content_types as $content_type) {
@@ -109,8 +107,8 @@ class NodeRevisionDeleteAdminSettings extends ConfigFormBase {
 
       // Searching the revisions to keep for each content type.
       if (isset($node_revision_delete_track[$content_type->id()])) {
-        // Revisions to keep in the database.
-        $revisions_to_keep = $node_revision_delete_track[$content_type->id()]['revisions_to_keep'];
+        // Minimum revisions to keep in the database.
+        $minimum_revisions_to_keep = $node_revision_delete_track[$content_type->id()]['minimum_revisions_to_keep'];
         // When to delete time (is a number, 0 for always).
         $when_to_delete_number = $node_revision_delete_track[$content_type->id()]['when_to_delete'];
         $when_to_delete = (bool) $when_to_delete_number ? _node_revision_delete_when_to_delete_time_string($when_to_delete_number) : $this->t('Always delete');
@@ -120,7 +118,7 @@ class NodeRevisionDeleteAdminSettings extends ConfigFormBase {
         $minimun_age_to_delete = (bool) $minimun_age_to_delete_number ? _node_revision_delete_minimun_age_to_delete_string($minimun_age_to_delete_number) : $this->t('None');
 
         // Number of candidates nodes to delete theirs revision.
-        $candidate_nodes = count(_node_revision_delete_candidates($content_type->id(), $revisions_to_keep));
+        $candidate_nodes = count(_node_revision_delete_candidates($content_type->id(), $minimum_revisions_to_keep, $when_to_delete_number, $minimun_age_to_delete_number));
         // Action to delete the configuration for the content type.
         $dropdown['#links']['delete'] = [
           'title' => $this->t('Untrack'),
@@ -128,7 +126,7 @@ class NodeRevisionDeleteAdminSettings extends ConfigFormBase {
         ];
       }
       else {
-        $revisions_to_keep = $this->t('Untracked');
+        $minimum_revisions_to_keep = $this->t('Untracked');
         $candidate_nodes = '-';
         $when_to_delete = $this->t('Untracked');
         $minimun_age_to_delete = $this->t('Untracked');
@@ -140,9 +138,9 @@ class NodeRevisionDeleteAdminSettings extends ConfigFormBase {
       $rows[] = [
         $content_type->label(),
         $content_type->id(),
-        $revisions_to_keep,
-        $when_to_delete,
+        $minimum_revisions_to_keep,
         $minimun_age_to_delete,
+        $when_to_delete,
         $candidate_nodes,
         $dropdown,
       ];
@@ -218,7 +216,7 @@ class NodeRevisionDeleteAdminSettings extends ConfigFormBase {
     ];
     // Configuration for the node_revision_delete_minimun_age_to_delete_time
     // variable.
-    $form['minimun_age_to_delete'] = ['#type' => 'fieldset', '#title' => $this->t('Minimum age of revision to delete')];
+    $form['minimun_age_to_delete'] = ['#type' => 'fieldset', '#title' => $this->t('Minimum age of revision to delete configuration')];
     $form['minimun_age_to_delete']['node_revision_delete_minimun_age_to_delete_time_max_number'] = [
       '#type' => 'number',
       '#title' => t('Maximun number allowed'),

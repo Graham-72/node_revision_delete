@@ -2,7 +2,7 @@ table caption {
   font-weight: bold;
 }
 
-div.form-item-node-revision-delete-revisions-to-keep,
+div.form-item-minimum-revisions-to-keep,
 div.form-item-node-revision-delete-when-to-delete,
 div.form-item-node-revision-delete-minimun-age-to-delete {
   margin-left: 15px;

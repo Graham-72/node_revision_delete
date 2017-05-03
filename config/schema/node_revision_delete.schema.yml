@@ -16,16 +16,16 @@ node_revision_delete.settings:
       mapping:
         max_number:
           type: integer
-          label: 'The maximun number for when_to_delete configuration'
+          label: 'The maximum number for when_to_delete configuration'
         time:
           type: string
           label: 'The time value for when_to_delete configuration (days, weeks or months)'
-    node_revision_delete_minimun_age_to_delete_time:
+    node_revision_delete_minimum_age_to_delete_time:
       type: mapping
       mapping:
         max_number:
           type: integer
-          label: The maximun number for minimun_age_to_delete configuration'
+          label: The maximum number for minimum_age_to_delete configuration'
         time:
           type: string
           label: 'The time value for when_to_delete configuration (days, weeks or months)'
@@ -38,9 +38,9 @@ node_revision_delete.settings:
           minimum_revisions_to_keep:
             type: integer
             label: 'Minimum number of revisions to keep'
+          minimum_age_to_delete:
+            type: integer
+            label: 'Minimum age in months of revision to delete'
           when_to_delete:
             type: integer
             label: 'Number of inactivity months to wait for delete a revision'
-          minimun_age_to_delete:
-            type: integer
-            label: 'Minimum age in months of revision to delete'

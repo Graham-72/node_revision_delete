@@ -111,14 +111,14 @@ class NodeRevisionDeleteAdminSettings extends ConfigFormBase {
         $minimum_revisions_to_keep = $node_revision_delete_track[$content_type->id()]['minimum_revisions_to_keep'];
         // When to delete time (is a number, 0 for always).
         $when_to_delete_number = $node_revision_delete_track[$content_type->id()]['when_to_delete'];
-        $when_to_delete = (bool) $when_to_delete_number ? _node_revision_delete_when_to_delete_time_string($when_to_delete_number) : $this->t('Always delete');
+        $when_to_delete = (bool) $when_to_delete_number ? _node_revision_delete_time_string('when_to_delete', $when_to_delete_number) : $this->t('Always delete');
 
-        // Minimun age to delete (is a number, 0 for none).
-        $minimun_age_to_delete_number = $node_revision_delete_track[$content_type->id()]['minimun_age_to_delete'];
-        $minimun_age_to_delete = (bool) $minimun_age_to_delete_number ? _node_revision_delete_minimun_age_to_delete_string($minimun_age_to_delete_number) : $this->t('None');
+        // Minimum age to delete (is a number, 0 for none).
+        $minimum_age_to_delete_number = $node_revision_delete_track[$content_type->id()]['minimum_age_to_delete'];
+        $minimum_age_to_delete = (bool) $minimum_age_to_delete_number ? _node_revision_delete_time_string('minimum_age_to_delete', $minimum_age_to_delete_number) : $this->t('None');
 
         // Number of candidates nodes to delete theirs revision.
-        $candidate_nodes = count(_node_revision_delete_candidates($content_type->id(), $minimum_revisions_to_keep, $when_to_delete_number, $minimun_age_to_delete_number));
+        $candidate_nodes = count(_node_revision_delete_candidates($content_type->id(), $minimum_revisions_to_keep, $when_to_delete_number, $minimum_age_to_delete_number));
         // Action to delete the configuration for the content type.
         $dropdown['#links']['delete'] = [
           'title' => $this->t('Untrack'),
@@ -129,7 +129,7 @@ class NodeRevisionDeleteAdminSettings extends ConfigFormBase {
         $minimum_revisions_to_keep = $this->t('Untracked');
         $candidate_nodes = '-';
         $when_to_delete = $this->t('Untracked');
-        $minimun_age_to_delete = $this->t('Untracked');
+        $minimum_age_to_delete = $this->t('Untracked');
       }
 
       // Rendering the dropdown.
@@ -139,7 +139,7 @@ class NodeRevisionDeleteAdminSettings extends ConfigFormBase {
         $content_type->label(),
         $content_type->id(),
         $minimum_revisions_to_keep,
-        $minimun_age_to_delete,
+        $minimum_age_to_delete,
         $when_to_delete,
         $candidate_nodes,
         $dropdown,
@@ -197,40 +197,40 @@ class NodeRevisionDeleteAdminSettings extends ConfigFormBase {
       'weeks' => $this->t('Weeks'),
       'months' => $this->t('Months'),
     ];
+    // Configuration for the node_revision_delete_minimum_age_to_delete_time
+    // variable.
+    $form['minimum_age_to_delete'] = ['#type' => 'fieldset', '#title' => $this->t('Minimum age of revision to delete configuration')];
+    $form['minimum_age_to_delete']['node_revision_delete_minimum_age_to_delete_time_max_number'] = [
+      '#type' => 'number',
+      '#title' => t('Maximum number allowed'),
+      '#description' => t('The maximum number in the "Minimum age of revision to delete" configuration in each content type edit page. If you change this number and the new value is smaller than the value defined for a content type in the "Minimum age of revision to delete" setting, the "Minimum age of revision to delete" setting for that content type will take it.'),
+      '#default_value' => $config->get('node_revision_delete_minimum_age_to_delete_time')['max_number'],
+      '#min' => 1,
+    ];
+    $form['minimum_age_to_delete']['node_revision_delete_minimum_age_to_delete_time_time'] = [
+      '#type' => 'select',
+      '#title' => t('The time value'),
+      '#description' => t('The time value allowed in the "Minimum age of revision to delete" configuration in each content type edit page. If you change this value all the configured content types will take it.'),
+      '#options' => $allowed_time,
+      '#size' => 1,
+      '#default_value' => $config->get('node_revision_delete_minimum_age_to_delete_time')['time'],
+    ];
     // Configuration for the node_revision_delete_when_to_delete_time variable.
     $form['when_to_delete'] = ['#type' => 'fieldset', '#title' => $this->t('When to delete configuration')];
     $form['when_to_delete']['node_revision_delete_when_to_delete_time_max_number'] = [
       '#type' => 'number',
-      '#title' => t('Maximun number allowed'),
-      '#description' => t('The maximun number allowed in the "When to delete" configuration in each content type edit page.'),
+      '#title' => t('Maximum number allowed'),
+      '#description' => t('The maximum number allowed in the "When to delete" configuration in each content type edit page. If you change this number and the new value is smaller than the value defined for a content type in the "When to delete" setting, the "When to delete" setting for that content type will take it.'),
       '#default_value' => $config->get('node_revision_delete_when_to_delete_time')['max_number'],
       '#min' => 1,
     ];
     $form['when_to_delete']['node_revision_delete_when_to_delete_time_time'] = [
       '#type' => 'select',
       '#title' => t('The time value'),
-      '#description' => t('The time value allowed in the "When to delete" configuration in each content type edit page.'),
+      '#description' => t('The time value allowed in the "When to delete" configuration in each content type edit page. If you change this value all the configured content types will take it.'),
       '#options' => $allowed_time,
       '#size' => 1,
       '#default_value' => $config->get('node_revision_delete_when_to_delete_time')['time'],
-    ];
-    // Configuration for the node_revision_delete_minimun_age_to_delete_time
-    // variable.
-    $form['minimun_age_to_delete'] = ['#type' => 'fieldset', '#title' => $this->t('Minimum age of revision to delete configuration')];
-    $form['minimun_age_to_delete']['node_revision_delete_minimun_age_to_delete_time_max_number'] = [
-      '#type' => 'number',
-      '#title' => t('Maximun number allowed'),
-      '#description' => t('The maximun number in the "Minimum age of revision to delete" configuration in each content type edit page.'),
-      '#default_value' => $config->get('node_revision_delete_minimun_age_to_delete_time')['max_number'],
-      '#min' => 1,
-    ];
-    $form['minimun_age_to_delete']['node_revision_delete_minimun_age_to_delete_time_time'] = [
-      '#type' => 'select',
-      '#title' => t('The time value'),
-      '#description' => t('The time value allowed in the "Minimum age of revision to delete" configuration in each content type edit page.'),
-      '#options' => $allowed_time,
-      '#size' => 1,
-      '#default_value' => $config->get('node_revision_delete_minimun_age_to_delete_time')['time'],
     ];
     // Providing the option to run now the batch job.
     $form['run_now'] = [
@@ -255,21 +255,25 @@ class NodeRevisionDeleteAdminSettings extends ConfigFormBase {
   public function submitForm(array &$form, FormStateInterface $form_state) {
     parent::submitForm($form, $form_state);
     // Getting the values for node_revision_delete_when_to_delete_time.
+    $when_to_delete_time_max_number = $form_state->getValue('node_revision_delete_when_to_delete_time_max_number');
     $node_revision_delete_when_to_delete_time = [
-      'max_number' => $form_state->getValue('node_revision_delete_when_to_delete_time_max_number'),
+      'max_number' => $when_to_delete_time_max_number,
       'time' => $form_state->getValue('node_revision_delete_when_to_delete_time_time'),
     ];
-    // Getting the values for node_revision_delete_minimun_age_to_delete_time.
-    $node_revision_delete_minimun_age_to_delete_time = [
-      'max_number' => $form_state->getValue('node_revision_delete_minimun_age_to_delete_time_max_number'),
-      'time' => $form_state->getValue('node_revision_delete_minimun_age_to_delete_time_time'),
+    // Getting the values for node_revision_delete_minimum_age_to_delete_time.
+    $minimum_age_to_delete_time_max_number = $form_state->getValue('node_revision_delete_minimum_age_to_delete_time_max_number');
+    $node_revision_delete_minimum_age_to_delete_time = [
+      'max_number' => $minimum_age_to_delete_time_max_number,
+      'time' => $form_state->getValue('node_revision_delete_minimum_age_to_delete_time_time'),
     ];
     // Saving the configuration.
+    _node_revision_delete_update_time_max_number_config('when_to_delete', $when_to_delete_time_max_number);
+    _node_revision_delete_update_time_max_number_config('minimum_age_to_delete', $minimum_age_to_delete_time_max_number);
     $this->config('node_revision_delete.settings')
       ->set('node_revision_delete_cron', $form_state->getValue('node_revision_delete_cron'))
       ->set('node_revision_delete_time', $form_state->getValue('node_revision_delete_time'))
       ->set('node_revision_delete_when_to_delete_time', $node_revision_delete_when_to_delete_time)
-      ->set('node_revision_delete_minimun_age_to_delete_time', $node_revision_delete_minimun_age_to_delete_time)
+      ->set('node_revision_delete_minimum_age_to_delete_time', $node_revision_delete_minimum_age_to_delete_time)
       ->save();
   }
 

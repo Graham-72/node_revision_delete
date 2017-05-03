@@ -88,13 +88,13 @@ function node_revision_delete_form_node_type_form_alter(&$form, FormStateInterfa
     $track = TRUE;
     $minimum_revisions_to_keep = $node_revision_delete_track[$content_type]['minimum_revisions_to_keep'];
     $when_to_delete = $node_revision_delete_track[$content_type]['when_to_delete'];
-    $minimun_age_to_delete = $node_revision_delete_track[$content_type]['minimun_age_to_delete'];
+    $minimum_age_to_delete = $node_revision_delete_track[$content_type]['minimum_age_to_delete'];
   }
   else {
     $track = FALSE;
     $minimum_revisions_to_keep = 1;
     $when_to_delete = 0;
-    $minimun_age_to_delete = 0;
+    $minimum_age_to_delete = 0;
   }
   // Element to track the content type.
   $form['workflow']['node_revision_delete_track'] = [
@@ -122,21 +122,21 @@ function node_revision_delete_form_node_type_form_alter(&$form, FormStateInterfa
       ],
     ],
   ];
-  // Getting the max number for node_revision_delete_minimun_age_to_delete_time.
-  $node_revision_delete_minimun_age_to_delete_time_max_number = $config->get('node_revision_delete_minimun_age_to_delete_time')['max_number'];
-  // Available options for minimun_age_to_delete.
-  $options_minimun_age_to_delete[0] = t('None');
-  for ($i = 1; $i <= $node_revision_delete_minimun_age_to_delete_time_max_number; $i++) {
-    $options_minimun_age_to_delete[$i] = _node_revision_delete_minimun_age_to_delete_string($i);
+  // Getting the max number for node_revision_delete_minimum_age_to_delete_time.
+  $node_revision_delete_minimum_age_to_delete_time_max_number = $config->get('node_revision_delete_minimum_age_to_delete_time')['max_number'];
+  // Available options for minimum_age_to_delete.
+  $options_minimum_age_to_delete[0] = t('None');
+  for ($i = 1; $i <= $node_revision_delete_minimum_age_to_delete_time_max_number; $i++) {
+    $options_minimum_age_to_delete[$i] = _node_revision_delete_time_string('minimum_age_to_delete', $i);
   }
   // Element to know when to delete the revisions.
-  $form['workflow']['minimun_age_to_delete'] = [
+  $form['workflow']['minimum_age_to_delete'] = [
     '#type' => 'select',
     '#title' => t('Minimum age of revisions to delete'),
     '#description' => t('Revisions older of this age will be deleted, but just only after the "Minimum number of revisions to keep" will be reached. If you don\'t want to take in count the age of the revisions, set to "None".'),
-    '#options' => $options_minimun_age_to_delete,
+    '#options' => $options_minimum_age_to_delete,
     '#size' => 1,
-    '#default_value' => $minimun_age_to_delete,
+    '#default_value' => $minimum_age_to_delete,
     '#states' => [
       // Hide the settings when the cancel notify checkbox is disabled.
       'visible' => [
@@ -150,7 +150,7 @@ function node_revision_delete_form_node_type_form_alter(&$form, FormStateInterfa
   $options_when_to_delete[0] = t('Always');
   for ($i = 1; $i <= $node_revision_delete_when_to_delete_time_max_number; $i++) {
     // Creating the time string.
-    $options_when_to_delete[$i] = _node_revision_delete_when_to_delete_time_string($i);
+    $options_when_to_delete[$i] = _node_revision_delete_time_string('when_to_delete', $i);
   }
   // Element to know when to delete the revisions.
   $form['workflow']['when_to_delete'] = [
@@ -195,10 +195,10 @@ function _node_revision_delete_form_node_type_submit(array &$form, FormStateInte
   if ($track) {
     // Getting the form values.
     $minimum_revisions_to_keep = $form_state->getValue('minimum_revisions_to_keep');
+    $minimum_age_to_delete = $form_state->getValue('minimum_age_to_delete');
     $when_to_delete = $form_state->getValue('when_to_delete');
-    $minimun_age_to_delete = $form_state->getValue('minimun_age_to_delete');
     // Saving the values in the config.
-    _node_revision_delete_save_content_type_config($content_type, $minimum_revisions_to_keep, $when_to_delete, $minimun_age_to_delete);
+    _node_revision_delete_save_content_type_config($content_type, $minimum_revisions_to_keep, $minimum_age_to_delete, $when_to_delete);
   }
   // If we are not tranking the content type and it exists (is not new)
   // we need to delete the his config.
@@ -215,12 +215,12 @@ function _node_revision_delete_form_node_type_submit(array &$form, FormStateInte
  *   Content type machine name.
  * @param int $minimum_revisions_to_keep
  *   Minimum number of revisions to keep.
+ * @param int $minimum_age_to_delete
+ *   Minimum age in months of revision to delete.
  * @param int $when_to_delete
  *   Number of inactivity months to wait for delete a revision.
- * @param int $minimun_age_to_delete
- *   Minimum age in months of revision to delete.
  */
-function _node_revision_delete_save_content_type_config($content_type, $minimum_revisions_to_keep, $when_to_delete, $minimun_age_to_delete) {
+function _node_revision_delete_save_content_type_config($content_type, $minimum_revisions_to_keep, $minimum_age_to_delete, $when_to_delete) {
   // Getting the config file.
   $config = \Drupal::service('config.factory')->getEditable('node_revision_delete.settings');
   // Getting the variables with the content types configuration.
@@ -228,8 +228,8 @@ function _node_revision_delete_save_content_type_config($content_type, $minimum_
   // Creating the content type info.
   $content_type_info = [
     'minimum_revisions_to_keep' => $minimum_revisions_to_keep,
+    'minimum_age_to_delete' => $minimum_age_to_delete,
     'when_to_delete' => $when_to_delete,
-    'minimun_age_to_delete' => $minimun_age_to_delete,
   ];
   // Adding the info into te array.
   $node_revision_delete_track[$content_type] = $content_type_info;
@@ -294,13 +294,13 @@ function _node_revision_delete_delete_content_type_config($content_type) {
  *   Minimum number of revisions to keep.
  * @param int $when_to_delete
  *   Number of inactivity months to wait for delete a revision.
- * @param int $minimun_age_to_delete
+ * @param int $minimum_age_to_delete
  *   Minimum age in months of revision to delete.
  *
  * @return array
  *   Array of nids.
  */
-function _node_revision_delete_candidates($content_type, $minimum_revisions_to_keep, $when_to_delete, $minimun_age_to_delete) {
+function _node_revision_delete_candidates($content_type, $minimum_revisions_to_keep, $when_to_delete, $minimum_age_to_delete) {
   $connection = \Drupal::service('database');
   // Array with sustitution values.
   $array = [
@@ -330,39 +330,61 @@ function node_revision_delete_library_info_alter(&$libraries, $extension) {
 }
 
 /**
- * Return the string for the 'When to delete' option.
+ * Return the time string for the config_name parameter.
  *
+ * @param string $config_name
+ *   The config name.
  * @param int $number
- *   The number for the when_to_delete configuration.
+ *   The number for the $config_name parameter configuration.
  *
  * @return string
- *   The string for the 'When to delete' option.
+ *   The time string for the $config_name parameter.
  */
-function _node_revision_delete_when_to_delete_time_string($number) {
+function _node_revision_delete_time_string($config_name, $number) {
   // Geting the config.
   $config = \Drupal::config('node_revision_delete.settings');
-  $node_revision_delete_when_to_delete_time = $config->get('node_revision_delete_when_to_delete_time');
-  $time_singular = TIME_OPTIONS[$node_revision_delete_when_to_delete_time['time']]['singular'];
-  $time_plural = TIME_OPTIONS[$node_revision_delete_when_to_delete_time['time']]['plural'];
+  $config_name_time = $config->get('node_revision_delete_' . $config_name . '_time');
+  // Searching for the singular word.
+  $time_singular = TIME_OPTIONS[$config_name_time['time']]['singular'];
+  // Searching for the plural word.
+  $time_plural = TIME_OPTIONS[$config_name_time['time']]['plural'];
+  // Is singular or plural?
   $time = $number == 1 ? $time_singular : $time_plural;
-  return t('After @number @time of inactivity', ['@number' => $number, '@time' => $time]);
+  // Return the time string for the $config_name parameter.
+  switch ($config_name) {
+    case 'minimum_age_to_delete':
+      return t('@number @time', ['@number' => $number, '@time' => $time]);
+
+    case 'when_to_delete':
+      return t('After @number @time of inactivity', ['@number' => $number, '@time' => $time]);
+  }
 }
 
 /**
- * Return the string for the 'Minimum age of revision to delete' option.
+ * Update the max_number for a config name.
  *
- * @param int $number
- *   The number for the minimun_age_to_delete configuration.
- *
- * @return string
- *   The string for the 'Minimum age of revision to delete' option.
+ * @param string $config_name
+ *   Config name to update.
+ * @param int $max_number
+ *   The maximum number for $config_name parameter.
  */
-function _node_revision_delete_minimun_age_to_delete_string($number) {
-  // Geting the config.
-  $config = \Drupal::config('node_revision_delete.settings');
-  $node_revision_delete_minimun_age_to_delete_time = $config->get('node_revision_delete_minimun_age_to_delete_time');
-  $time_singular = TIME_OPTIONS[$node_revision_delete_minimun_age_to_delete_time['time']]['singular'];
-  $time_plural = TIME_OPTIONS[$node_revision_delete_minimun_age_to_delete_time['time']]['plural'];
-  $time = $number == 1 ? $time_singular : $time_plural;
-  return t('@number @time', ['@number' => $number, '@time' => $time]);
+function _node_revision_delete_update_time_max_number_config($config_name, $max_number) {
+  // Getting the config file.
+  $config = \Drupal::service('config.factory')->getEditable('node_revision_delete.settings');
+  // Getting the variables with the content types configuration.
+  $node_revision_delete_track = $config->get('node_revision_delete_track');
+  $changed = FALSE;
+  // Checking the when_to_delete value for all the configured content types.
+  foreach ($node_revision_delete_track as $content_type => $content_type_info) {
+    // If the new defined max_number is smaller than the defined when_to_delete
+    // value in the config, we need to change the stored config value.
+    if ($max_number < $content_type_info[$config_name]) {
+      $node_revision_delete_track[$content_type][$config_name] = $max_number;
+      $changed = TRUE;
+    }
+  }
+  if ($changed) {
+    // Saving the values in the config.
+    $config->set('node_revision_delete_track', $node_revision_delete_track)->save();
+  }
 }

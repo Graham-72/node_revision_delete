@@ -4,10 +4,10 @@ node_revision_delete.settings:
   mapping:
     node_revision_delete_cron:
       type: integer
-      label: 'Number of revisions to remove in each cron run' 
+      label: 'Number of revisions to remove in each cron run'
     node_revision_delete_last_execute:
       type: integer
-      label: 'Last time that the node revision delete was made' 
+      label: 'Last time that the node revision delete was made'
     node_revision_delete_time:
       type: string
       label: 'Frequency with which to delete revisions while cron is running'

@@ -60,7 +60,7 @@ class ContentTypeConfigurationDeleteForm extends ConfirmFormBase {
    * {@inheritdoc}
    */
   public function getQuestion() {
-    return $this->t('Are you sure you want to delete the configuration for the "%content_type" content type?', array('%content_type' => $this->contentType->label()));
+    return $this->t('Are you sure you want to delete the configuration for the "%content_type" content type?', ['%content_type' => $this->contentType->label()]);
   }
 
   /**

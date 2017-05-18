@@ -118,7 +118,7 @@ class NodeRevisionDeleteAdminSettings extends ConfigFormBase {
         $minimum_age_to_delete = (bool) $minimum_age_to_delete_number ? _node_revision_delete_time_string('minimum_age_to_delete', $minimum_age_to_delete_number) : $this->t('None');
 
         // Number of candidates nodes to delete theirs revision.
-        $candidate_nodes = count(_node_revision_delete_candidates($content_type->id(), $minimum_revisions_to_keep, $when_to_delete_number, $minimum_age_to_delete_number));
+        $candidate_nodes = count(_node_revision_delete_candidates($content_type->id(), $minimum_revisions_to_keep, $minimum_age_to_delete_number, $when_to_delete_number));
         // Action to delete the configuration for the content type.
         $dropdown['#links']['delete'] = [
           'title' => $this->t('Untrack'),

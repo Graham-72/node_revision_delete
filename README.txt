@@ -45,7 +45,7 @@ CONFIGURATION
      how often should revision be deleted while cron runs. You you can save
      the configurations and optionally start a batch job to delete old revisions
      for tracked content types. For this you need the
-     'Administer revision deletion settings' permission.
+     'Administer Node Revision Delete' permission.
 
  * Configure each content type in Administration » Structure » Content types »
    Content type name:

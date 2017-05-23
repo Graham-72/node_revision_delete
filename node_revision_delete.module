@@ -232,12 +232,12 @@ function node_revision_delete_content_types() {
  *   Array of nids.
  */
 function node_revision_delete_candidates($content_type, $max_revisions) {
-  $result = db_query('SELECT n.nid, count(*) as total
+  $result = db_query('SELECT r.nid, count(*) as total
                      FROM {node} n
                      INNER JOIN {node_revision} r ON r.nid = n.nid
                      WHERE n.type = :content_type
                      GROUP BY r.nid
-                     HAVING total > :max_revisions
+                     HAVING count(*) > :max_revisions
                      ORDER BY total DESC', array(
                        ':content_type' => $content_type,
                        ':max_revisions' => $max_revisions,

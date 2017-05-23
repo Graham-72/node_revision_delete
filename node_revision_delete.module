@@ -272,7 +272,7 @@ function node_revision_delete_form($form, &$form_state) {
         'machine_name' => $type,
         'number' => t('Untracked'),
         'candidates' => '-',
-        'link' => l(t('edit'), 'admin/structure/types/manage/' . $type),
+        'link' => l(t('edit'), 'admin/structure/types/manage/' . $type, array('query' => array('destination' => 'admin/config/content/node_revision_delete'))),
       );
 
       if (array_key_exists($type, $tracked_content_types)) {

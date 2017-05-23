@@ -144,7 +144,7 @@ function node_revision_delete_cron() {
     $tracked_content_types = node_revision_delete_content_types();
     // Flag used to count how many have been deleted in this cron run.
     $total_deleted = 0;
-    foreach (node_revision_delete_content_types() as $content_type => $revisions_to_keep) {
+    foreach ($tracked_content_types as $content_type => $revisions_to_keep) {
       $candidate_nids = node_revision_delete_candidates($content_type, $revisions_to_keep);
       if (!empty($candidate_nids)) {
         foreach ($candidate_nids as $nid) {

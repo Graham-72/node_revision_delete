@@ -37,7 +37,8 @@ function node_revision_delete_help($path, $arg) {
 function node_revision_delete_permission() {
   return array(
     'administer node_revision_delete' => array(
-      'title' => t('Administer revision deletion settings'),
+      'title' => t('Administer Node Revision Delete'),
+      'description' => t('Allow access to configure the module settings.'),
     ),
   );
 }

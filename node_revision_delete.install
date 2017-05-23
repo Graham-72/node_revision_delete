@@ -18,6 +18,7 @@ function node_revision_delete_install() {
 function node_revision_delete_uninstall() {
   variable_del('node_revision_delete_time');
   variable_del('node_revision_delete_last_execute');
+  variable_del('node_revision_delete_cron');
   foreach (array_keys(node_type_get_names()) as $type) {
     variable_del('node_revision_delete_track_' . $type);
     variable_del('node_revision_delete_number_' . $type);

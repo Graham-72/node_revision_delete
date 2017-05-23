@@ -257,11 +257,11 @@ function node_revision_delete_form($form, &$form_state) {
 
   // List tracked content types.
   $headers = array(
-    'Content Type',
-    'Machine Name',
-    'Revisions to Keep',
+    'Content type',
+    'Machine name',
+    'Revisions to keep',
     'Candidate nodes',
-    '&nbsp;',
+    'Operations',
   );
   $tracked_content_types = node_revision_delete_content_types();
   if (!empty($tracked_content_types)) {

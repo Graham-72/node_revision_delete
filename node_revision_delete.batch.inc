@@ -44,9 +44,9 @@ function node_revision_delete_batch_process($content_type, $max_revisions, &$con
 function node_revision_delete_batch_finish($success, $results, $operations) {
   if ($success) {
     foreach ($results as $nid => $count) {
-      drupal_set_message(t('Deleted !count revisions for node with nid !nid.', array(
-        '!count' => $count,
-        '!nid' => $nid,
+      drupal_set_message(t('Deleted @count revisions for node with nid @nid.', array(
+        '@count' => $count,
+        '@nid' => $nid,
       )));
     }
   }

@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Node Revision Delete Module
+ * Node Revision Delete Module.
  */
 
 // Maximum amount of revisions to delete per cron run.
@@ -164,11 +164,11 @@ function node_revision_delete_cron() {
  * Private function to perform revision deletion.
  *
  * @param int $nid
- *   nid of the node whoose oldest revisions will be deleted.
+ *   The node whoose oldest revisions will be deleted.
  * @param int $revisions_to_keep
- *   int max amount of revisions to keep for this node.
+ *   Max amount of revisions to keep for this node.
  * @param int $max
- *   int maximum amount of revisions to delete per run. Defaults to 50.
+ *   Maximum amount of revisions to delete per run. Defaults to 50,
  *   may be increased or decreased for performance.
  *
  * @return object
@@ -225,7 +225,6 @@ function node_revision_delete_content_types() {
  *
  * @param string $content_type
  *   A content type machine name.
- *
  * @param int $max_revisions
  *   Match nodes with a total amount of revisions higher than this number.
  *
@@ -242,7 +241,7 @@ function node_revision_delete_candidates($content_type, $max_revisions) {
                      ORDER BY total DESC', array(
                        ':content_type' => $content_type,
                        ':max_revisions' => $max_revisions,
-  ));
+                     ));
   return $result->fetchCol();
 }
 
@@ -342,7 +341,11 @@ function node_revision_delete_form_submit($form, &$form_state) {
     // Set up the batch job.
     $operations = array();
     foreach (node_revision_delete_content_types() as $content_type => $revisions_to_keep) {
-      $operations[] = array('node_revision_delete_batch_process', array($content_type, $revisions_to_keep));
+      $operations[] = array('node_revision_delete_batch_process',
+        array($content_type,
+          $revisions_to_keep,
+        ),
+      );
     }
     $batch = array(
       'operations' => $operations,

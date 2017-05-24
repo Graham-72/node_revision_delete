@@ -20,9 +20,12 @@ function node_revision_delete_uninstall() {
   variable_del('node_revision_delete_time');
   variable_del('node_revision_delete_last_execute');
   variable_del('node_revision_delete_cron');
-  foreach (array_keys(node_type_get_names()) as $type) {
-    variable_del('node_revision_delete_track_' . $type);
-    variable_del('node_revision_delete_number_' . $type);
+  // Searching the content type machine name.
+  $results = db_query("SELECT SUBSTR(name, 28) as name FROM {variable} WHERE name LIKE 'node_revision_delete_track_%'");
+  // Deleting the variables.
+  foreach ($results as $result) {
+    variable_del('node_revision_delete_track_' . $result->name);
+    variable_del('node_revision_delete_number_' . $result->name);
   }
 }
 

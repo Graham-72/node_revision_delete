@@ -404,3 +404,48 @@ function node_revision_delete_workbench_moderation_transition($node, $previous_s
     }
   }
 }
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function node_revision_delete_form_node_type_delete_confirm_alter(&$form, &$form_state, $form_id) {
+  // If we are deleting a content type.
+  $form['#submit'][] = '_node_revision_delete_form_node_type_delete';
+}
+
+/**
+ * Custom submit handler to delete the configuration variables.
+ *
+ * @param array $form
+ *   The form element.
+ * @param array $form_state
+ *   The form state.
+ */
+function _node_revision_delete_form_node_type_delete(array $form, array &$form_state) {
+  // Getting the content type machine name.
+  $content_type = $form['type']['#value'];
+  // Deleting the value from the config.
+  _node_revision_delete_delete_content_type_config($content_type);
+}
+
+/**
+ * Delete the content type config variable.
+ *
+ * @param string $content_type
+ *   Content type machine name.
+ *
+ * @return bool
+ *   Return TRUE if the content type config was deleted or FALSE if not exists.
+ */
+function _node_revision_delete_delete_content_type_config($content_type) {
+  // Getting the variable with the content type configuration.
+  $variable_track = 'node_revision_delete_track_' . $content_type;
+  $node_revision_delete_track = variable_get($variable_track, NULL);
+  // Checking if the config exists.
+  if (!is_null($node_revision_delete_track)) {
+    variable_del($variable_track);
+    variable_del('node_revision_delete_number_' . $content_type);
+    return TRUE;
+  }
+  return FALSE;
+}

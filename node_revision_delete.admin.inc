@@ -21,6 +21,8 @@ function node_revision_delete_form($form, &$form_state) {
   $tracked_content_types = node_revision_delete_content_types();
 
   $rows = array();
+  $exists_candidates_nodes = FALSE;
+
   foreach (node_type_get_names() as $type => $name) {
     $row = array(
       'name' => $name,
@@ -32,7 +34,11 @@ function node_revision_delete_form($form, &$form_state) {
 
     if (array_key_exists($type, $tracked_content_types)) {
       $row['number'] = $tracked_content_types[$type];
-      $row['candidates'] = count(node_revision_delete_candidates($type, $tracked_content_types[$type]));
+      $candidate_nodes = count(node_revision_delete_candidates($type, $tracked_content_types[$type]));
+      $row['candidates'] = $candidate_nodes;
+      if ($candidate_nodes && !$exists_candidates_nodes) {
+        $exists_candidates_nodes = TRUE;
+      }
     }
 
     $rows[] = $row;
@@ -78,11 +84,20 @@ function node_revision_delete_form($form, &$form_state) {
     '#title' => t('How often should revision be deleted while cron runs?'),
     '#default_value' => variable_get('node_revision_delete_time', NODE_REVISION_DELETE_TIME),
   );
+  // Providing the option to run now the batch job.
+  if ($exists_candidates_nodes) {
+    $disabled = FALSE;
+    $description = t('This will start a batch job to delete old revisions for tracked content types.');
+  }
+  else {
+    $disabled = TRUE;
+    $description = t('There not exists candidates nodes with revisions to delete.');
+  }
   $form['run_now'] = array(
     '#type' => 'checkbox',
-    '#title' => t('Delete revisions now.'),
-    '#description' => t('This will start a batch job to delete old revisions for tracked content types.'),
-    '#default_value' => 0,
+    '#title' => t('Delete revisions now'),
+    '#description' => $description,
+    '#disabled' => $disabled,
   );
   $form['actions'] = array('#type' => 'actions');
   $form['actions']['submit'] = array(
@@ -99,12 +114,15 @@ function node_revision_delete_form($form, &$form_state) {
 function node_revision_delete_form_submit($form, &$form_state) {
   variable_set('node_revision_delete_cron', $form_state['values']['node_revision_delete_cron']);
   variable_set('node_revision_delete_time', $form_state['values']['node_revision_delete_time']);
-  if ($form_state['values']['run_now'] == 1) {
+
+  $node_revision_delete_content_types = node_revision_delete_content_types();
+  if ($form_state['values']['run_now'] && count($node_revision_delete_content_types)) {
     // Set up the batch job.
     $operations = array();
-    foreach (node_revision_delete_content_types() as $content_type => $revisions_to_keep) {
+    foreach ($node_revision_delete_content_types as $content_type => $revisions_to_keep) {
       $operations[] = array('node_revision_delete_batch_process',
-        array($content_type,
+        array(
+          $content_type,
           $revisions_to_keep,
         ),
       );

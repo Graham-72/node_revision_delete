@@ -10,14 +10,14 @@
  */
 function node_revision_delete_drush_command() {
   $items['ndr-delete-cron-run'] = [
-    'description' => dt("Configures how many revisions delete per cron run."),
+    'description' => dt('Configures how many revisions delete per cron run.'),
     'arguments' => [
       'quantity' => dt('Revisions quantity to delete per cron run.'),
     ],
     'aliases' => ['ndr-dcr'],
     'examples' => [
-      'ndr-delete-cron-run' => dt("Show how many revisions the module will delete per cron run."),
-      'ndr-delete-cron-run 50' => dt("Configure the module to delete 50 revisions per cron run."),
+      'ndr-delete-cron-run' => dt('Show how many revisions the module will delete per cron run.'),
+      'ndr-delete-cron-run 50' => dt('Configure the module to delete 50 revisions per cron run.'),
     ],
   ];
   return $items;
@@ -29,10 +29,10 @@ function node_revision_delete_drush_command() {
 function node_revision_delete_drush_help($section) {
   switch ($section) {
     case 'meta:node_revision_delete:title':
-      return dt("Node Revision Delete commands");
+      return dt('Node Revision Delete commands');
 
     case 'drush:ndr-delete-cron-run':
-      return dt("Configures how many revisions delete per cron run.");
+      return dt('Configures how many revisions delete per cron run.');
   }
 }
 

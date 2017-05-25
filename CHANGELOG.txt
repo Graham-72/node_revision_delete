@@ -1,0 +1,20 @@
+Node Revision Delete 8.1.0-alpha2, 2017-05-03
+---------------------------------------------
+Changes since 8.1.0-alpha1:
+
+- by adriancid: Drush command to configure how many revisions delete per cron
+  run.
+- by adriancid: Drush command to get how many revisions will be deleted per
+  cron run.
+- by adriancid: Add link to configure page.
+- by adriancid: Keep revisions during a certain time.
+- by adriancid: Delete revision by life time.
+- by adriancid: Update the settings and schema files.
+- by adriancid: Add a config variable to configure the time for the
+  'when_to_delete' and 'minimun_age_to_delete' variables.
+- by adriancid: Add a config variable to configure the minimum_revisions_to_keep
+  variable.
+
+Node Revision Delete 8.1.0-alpha1, 2017-04-19
+---------------------------------------------
+- Initial release.

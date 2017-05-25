@@ -85,6 +85,8 @@ class NodeRevisionDeleteAdminSettings extends ConfigFormBase {
     $node_revision_delete_track = $config->get('node_revision_delete_track');
     // Looking for all the content types.
     $content_types = $this->entityManager->getStorage('node_type')->loadMultiple();
+    $exists_candidates_nodes = FALSE;
+
     foreach ($content_types as $content_type) {
       $route_parameters = ['node_type' => $content_type->id()];
       // Return to the same page after save the content type.
@@ -119,6 +121,9 @@ class NodeRevisionDeleteAdminSettings extends ConfigFormBase {
 
         // Number of candidates nodes to delete theirs revision.
         $candidate_nodes = count(_node_revision_delete_candidates($content_type->id(), $minimum_revisions_to_keep, $minimum_age_to_delete_number, $when_to_delete_number));
+        if ($candidate_nodes && !$exists_candidates_nodes) {
+          $exists_candidates_nodes = TRUE;
+        }
         // Action to delete the configuration for the content type.
         $dropdown['#links']['delete'] = [
           'title' => $this->t('Untrack'),
@@ -233,10 +238,20 @@ class NodeRevisionDeleteAdminSettings extends ConfigFormBase {
       '#default_value' => $config->get('node_revision_delete_when_to_delete_time')['time'],
     ];
     // Providing the option to run now the batch job.
+    if ($exists_candidates_nodes) {
+      $disabled = FALSE;
+      $description = $this->t('This will start a batch job to delete old revisions for tracked content types.');
+    }
+    else {
+      $disabled = TRUE;
+      $description = $this->t('There not exists candidates nodes with revisions to delete.');
+    }
+
     $form['run_now'] = [
       '#type' => 'checkbox',
-      '#title' => $this->t('Delete revisions now.'),
-      '#description' => $this->t('This will start a batch job to delete old revisions for tracked content types.'),
+      '#title' => $this->t('Delete revisions now'),
+      '#description' => $description,
+      '#disabled' => $disabled,
     ];
 
     return parent::buildForm($form, $form_state);

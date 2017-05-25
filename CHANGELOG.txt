@@ -1,7 +1,8 @@
-Node Revision Delete 7.x-2.7, 2017-05-24
+Node Revision Delete 7.x-2.7, 2017-05-25
 ----------------------------------------
 Changes since 7.x-2.6:
 
+- #2881507 by adriancid: Create an option group in the content type edit form.
 - #2881502 by adriancid: Use dt() function to translate the drush command
   strings.
 - #2881467 by adriancid: Disable the 'Delete revisions now' option if there not

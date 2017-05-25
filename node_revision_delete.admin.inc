@@ -9,11 +9,6 @@
  * Page callback: Form constructor for Node Revision Delete administration form.
  */
 function node_revision_delete_form($form, &$form_state) {
-
-  $form['instruction'] = array(
-    '#markup' => t("<p>To allow Node Revision Delete to act upon a certain content type, you should navigate to that content type's edit page via Structure > Content types > [content type] > edit. Under <em>Publishing Options</em>, enable <em>Create new revision</em> and <em>Limit the amount of revisions for this content type</em>. Change the number at <em>Maximum number of revisions to keep</em>, if you need to, and finally, save your changes.</p>"),
-  );
-
   // List tracked content types.
   $headers = array(
     'Content type',
@@ -22,30 +17,37 @@ function node_revision_delete_form($form, &$form_state) {
     'Candidate nodes',
     'Operations',
   );
+
   $tracked_content_types = node_revision_delete_content_types();
-  if (!empty($tracked_content_types)) {
-    $rows = array();
-    foreach (node_type_get_names() as $type => $name) {
-      $row = array(
-        'name' => $name,
-        'machine_name' => $type,
-        'number' => t('Untracked'),
-        'candidates' => '-',
-        'link' => l(t('edit'), 'admin/structure/types/manage/' . $type, array('query' => array('destination' => 'admin/config/content/node_revision_delete'))),
-      );
 
-      if (array_key_exists($type, $tracked_content_types)) {
-        $row['number'] = $tracked_content_types[$type];
-        $row['candidates'] = count(node_revision_delete_candidates($type, $tracked_content_types[$type]));
-      }
-
-      $rows[] = $row;
-    }
-    $form['tracked'] = array(
-      '#prefix' => '<strong>' . t('Current configuration') . '</strong>',
-      '#markup' => theme('table', array('header' => $headers, 'rows' => $rows)),
+  $rows = array();
+  foreach (node_type_get_names() as $type => $name) {
+    $row = array(
+      'name' => $name,
+      'machine_name' => $type,
+      'number' => t('Untracked'),
+      'candidates' => '-',
+      'link' => l(t('edit'), 'admin/structure/types/manage/' . $type, array('query' => array('destination' => 'admin/config/content/node_revision_delete'))),
     );
+
+    if (array_key_exists($type, $tracked_content_types)) {
+      $row['number'] = $tracked_content_types[$type];
+      $row['candidates'] = count(node_revision_delete_candidates($type, $tracked_content_types[$type]));
+    }
+
+    $rows[] = $row;
   }
+  $form['tracked'] = array(
+    '#theme' => 'table',
+    '#caption' => t('Current configuration'),
+    '#header' => $headers,
+    '#rows' => $rows,
+    '#attached' => array(
+      'css' => array(
+        drupal_get_path('module', 'node_revision_delete') . '/css/node_revision_delete.css',
+      ),
+    ),
+  );
 
   // Number of revisions to delete per loop.
   $options_cron = array(10, 20, 50, 100, 200, 500, 1000);

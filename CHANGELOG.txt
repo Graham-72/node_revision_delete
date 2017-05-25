@@ -2,6 +2,8 @@ Node Revision Delete 7.x-2.7, 2017-05-24
 ----------------------------------------
 Changes since 7.x-2.6:
 
+- #2881321 by adriancid: Always show the status table in the admin settings
+  page.
 - #2881289 by adriancid: Put the admin form in the
   node_revision_delete.admin.inc file.
 - #2871238 by adriancid: Add the 'Limit the amount of revisions for this content

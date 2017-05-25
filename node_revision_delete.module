@@ -27,6 +27,12 @@ function node_revision_delete_help($path, $arg) {
       $output .= '<dd>' . t('Set the time to execute the Script') . '</dd>';
       $output .= '<dd>' . t('Select the Content type for which the revision delete will work') . '</dd>';
       $output .= '</dl>';
+
+    case 'admin/config/content/node_revision_delete':
+      $output = '';
+      $output .= '<p>' . t("To allow Node Revision Delete to act upon a certain content type, you should navigate to the desired content type's edit page via:") . '</p>';
+      $output .= '<p><em>' . t('Administration » Structure » Content types » [Content type name]') . '</em></p>';
+      $output .= '<p>' . t("Under the Publishing Options tab, enable 'Create new revision' and 'Limit the amount of revisions for this content type' checkboxes. Change the Maximum number of revisions to keep, if you need to, and finally, save your changes clicking in the Save content type button.") . '</p>';
   }
   return $output;
 }
@@ -233,16 +239,17 @@ function node_revision_delete_content_types() {
  *   Array of nids.
  */
 function node_revision_delete_candidates($content_type, $max_revisions) {
+  $params = array(
+    ':content_type' => $content_type,
+    ':max_revisions' => $max_revisions,
+  );
   $result = db_query('SELECT r.nid, count(*) as total
                      FROM {node} n
                      INNER JOIN {node_revision} r ON r.nid = n.nid
                      WHERE n.type = :content_type
                      GROUP BY r.nid
                      HAVING count(*) > :max_revisions
-                     ORDER BY total DESC', array(
-                       ':content_type' => $content_type,
-                       ':max_revisions' => $max_revisions,
-                     ));
+                     ORDER BY total DESC', $params);
   return $result->fetchCol();
 }
 

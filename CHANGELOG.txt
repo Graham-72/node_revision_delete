@@ -2,6 +2,8 @@ Node Revision Delete 7.x-2.7, 2017-05-24
 ----------------------------------------
 Changes since 7.x-2.6:
 
+- #2881502 by adriancid: Use dt() function to translate the drush command
+  strings.
 - #2881467 by adriancid: Disable the 'Delete revisions now' option if there not
   exists candidates nodes with revisions to delete.
 - #2881321 by adriancid: Always show the status table in the admin settings

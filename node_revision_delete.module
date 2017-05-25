@@ -352,8 +352,11 @@ function node_revision_delete_js_alter(&$javascript) {
   // will be fixed.
   // Getting the core js file.
   $core_file = (drupal_get_path('module', 'node') . '/content_types.js');
-  // Getting the module js file.
-  $module_file = drupal_get_path('module', 'node_revision_delete') . '/js/content_types.js';
-  // Overwriting the file.
-  $javascript[$core_file] = drupal_js_defaults($module_file);
+  // Replacing the file.
+  if (isset($javascript[$core_file])) {
+    // Getting the module js file.
+    $module_file = drupal_get_path('module', 'node_revision_delete') . '/js/content_types.js';
+    // Overwriting the file.
+    $javascript[$core_file] = drupal_js_defaults($module_file);
+  }
 }

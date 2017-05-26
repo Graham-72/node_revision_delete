@@ -1,3 +1,9 @@
+Node Revision Delete 7.x-2.8, 2017-XX-XX
+----------------------------------------
+Changes since 7.x-2.7:
+
+- #2881584 by adriancid: Implement the hook_drush_help() hook.
+
 Node Revision Delete 7.x-2.7, 2017-05-25
 ----------------------------------------
 Changes since 7.x-2.6:

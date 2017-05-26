@@ -29,6 +29,19 @@ function node_revision_delete_drush_command() {
 }
 
 /**
+ * Implements hook_drush_help().
+ */
+function node_revision_delete_drush_help($section) {
+  switch ($section) {
+    case 'meta:node_revision_delete:title':
+      return dt('Node Revision Delete commands');
+
+    case 'drush:node-revision-delete':
+      return dt('Deletes old node revisions for a given content type.');
+  }
+}
+
+/**
  * Implements drush_hook_COMMAND_validate().
  */
 function drush_node_revision_delete_validate($content_type, $revisions_to_keep) {

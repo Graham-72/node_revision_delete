@@ -4,6 +4,7 @@
  * @file
  * Node Revision Delete Module.
  */
+
 // Maximum amount of revisions to delete per cron run.
 define('NODE_REVISION_DELETE_TIME', 'never');
 define('NODE_REVISION_DELETE_CRON', 50);
@@ -14,7 +15,6 @@ define('NODE_REVISION_DELETE_TRACK', 0);
  * Implements hook_help().
  */
 function node_revision_delete_help($path, $arg) {
-  $output = NULL;
   switch ($path) {
     case 'admin/help#node_revision_delete':
       $output = '';
@@ -27,13 +27,16 @@ function node_revision_delete_help($path, $arg) {
       $output .= '<dd>' . t('Select the Content type for which the revision delete will work') . '</dd>';
       $output .= '</dl>';
 
+      return $output;
+
     case 'admin/config/content/node_revision_delete':
       $output = '';
       $output .= '<p>' . t("To allow Node Revision Delete to act upon a certain content type, you should navigate to the desired content type's edit page via:") . '</p>';
       $output .= '<p><em>' . t('Administration » Structure » Content types » [Content type name]') . '</em></p>';
       $output .= '<p>' . t("Under the Publishing Options tab, enable 'Create new revision' and 'Limit the amount of revisions for this content type' checkboxes. Change the Maximum number of revisions to keep, if you need to, and finally, save your changes clicking in the Save content type button.") . '</p>';
+
+      return $output;
   }
-  return $output;
 }
 
 /**
@@ -57,6 +60,7 @@ function node_revision_delete_menu() {
     'description' => 'Settings for automatically deleting node revisions.',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('node_revision_delete_form'),
+    'access callback' => 'user_access',
     'access arguments' => array('administer node_revision_delete'),
     'type' => MENU_NORMAL_ITEM,
     'file' => 'node_revision_delete.admin.inc',

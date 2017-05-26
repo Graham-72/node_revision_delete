@@ -16,9 +16,19 @@ function node_revision_delete_batch_process($content_type, $max_revisions, &$con
     $context['sandbox']['total'] = count($context['sandbox']['nids']);
   }
 
+  // Perform the actual revision deletion.
   $nid = $context['sandbox']['nids'][$context['sandbox']['current']];
   $deleted_revisions = _node_revision_delete_do_delete($nid, $max_revisions);
-  $context['sandbox']['deleted'][] = $deleted_revisions->count;
+
+  // Save results for final report.
+  if (isset($context['results'][$nid])) {
+    $context['results'][$nid] += $deleted_revisions->count;
+  }
+  else {
+    $context['results'][$nid] = $deleted_revisions->count;
+  }
+
+  // Evaluate if we are done with the current node.
   if (empty($deleted_revisions->pending)) {
     $context['sandbox']['current']++;
   }
@@ -33,8 +43,12 @@ function node_revision_delete_batch_process($content_type, $max_revisions, &$con
  */
 function node_revision_delete_batch_finish($success, $results, $operations) {
   if ($success) {
-    $message = count($results) . ' processed.';
-    drupal_set_message($message);
+    foreach ($results as $nid => $count) {
+      drupal_set_message(t('Deleted @count revisions for node with nid @nid.', array(
+        '@count' => $count,
+        '@nid' => $nid,
+      )));
+    }
   }
   else {
     // An error occurred.

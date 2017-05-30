@@ -4,6 +4,7 @@
  * @file
  * Contains node_revision_delete.module.
  */
+
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Url;
 use Drupal\Core\Form\FormStateInterface;
@@ -75,7 +76,7 @@ function node_revision_delete_preprocess_page(&$variables) {
  * Implements hook_form_BASE_FORM_ID_alter().
  */
 function node_revision_delete_form_node_type_form_alter(&$form, FormStateInterface &$form_state, $form_id) {
-  // Geting the config.
+  // Getting the config.
   $config = \Drupal::config('node_revision_delete.settings');
   // Getting the content types to track variable.
   $node_revision_delete_track = $config->get('node_revision_delete_track');
@@ -142,7 +143,7 @@ function node_revision_delete_form_node_type_form_alter(&$form, FormStateInterfa
     '#size' => 1,
     '#default_value' => $minimum_age_to_delete,
     '#states' => [
-      // Hide the settings when the cancel notify checkbox is disabled.
+      // Show the field when the checkbox is checked.
       'visible' => [
         ':input[name="node_revision_delete_track"]' => ['checked' => TRUE],
       ],
@@ -165,7 +166,7 @@ function node_revision_delete_form_node_type_form_alter(&$form, FormStateInterfa
     '#size' => 1,
     '#default_value' => $when_to_delete,
     '#states' => [
-      // Hide the settings when the cancel notify checkbox is disabled.
+      // Show the field when the checkbox is checked.
       'visible' => [
         ':input[name="node_revision_delete_track"]' => ['checked' => TRUE],
       ],
@@ -205,7 +206,7 @@ function _node_revision_delete_form_node_type_submit(array &$form, FormStateInte
     _node_revision_delete_save_content_type_config($content_type, $minimum_revisions_to_keep, $minimum_age_to_delete, $when_to_delete);
   }
   // If we are not tranking the content type and it exists (is not new)
-  // we need to delete the his config.
+  // we need to delete the existing config.
   elseif (!$form_state->getFormObject()->getEntity()->isNew()) {
     // Deleting the value from the config.
     _node_revision_delete_delete_content_type_config($content_type);

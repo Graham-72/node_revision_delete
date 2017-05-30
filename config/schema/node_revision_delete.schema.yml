@@ -13,6 +13,7 @@ node_revision_delete.settings:
       label: 'Frequency with which to delete revisions while cron is running'
     node_revision_delete_when_to_delete_time:
       type: mapping
+      label: 'Time configuration to know when the revision should be deleted'
       mapping:
         max_number:
           type: integer
@@ -22,6 +23,7 @@ node_revision_delete.settings:
           label: 'The time value for when_to_delete configuration (days, weeks or months)'
     node_revision_delete_minimum_age_to_delete_time:
       type: mapping
+      label: 'Time configuration to know the minimum age that the revision should have to be deleted'
       mapping:
         max_number:
           type: integer

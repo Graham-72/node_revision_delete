@@ -9,44 +9,56 @@
  * Page callback: Form constructor for Node Revision Delete administration form.
  */
 function node_revision_delete_form($form, &$form_state) {
-  // List tracked content types.
-  $headers = array(
-    'Content type',
-    'Machine name',
-    'Revisions to keep',
-    'Candidate nodes',
-    'Operations',
+// Table header.
+  $header = array(
+    t('Content type'),
+    t('Machine name'),
+    t('Minimum to keep'),
+    t('Minimum age'),
+    t('When to delete'),
+    t('Candidate nodes'),
+    t('Operations'),
   );
 
-  $tracked_content_types = node_revision_delete_content_types();
-
+// Table rows.
   $rows = array();
+
+// Getting the config variables.
+  $node_revision_delete_track = variable_get('node_revision_delete_track', array());
+// Looking for all the content types.
+  $content_types = node_type_get_types();
   $exists_candidates_nodes = FALSE;
 
-  foreach (node_type_get_names() as $type => $name) {
-    $row = array(
-      'name' => $name,
-      'machine_name' => $type,
-      'number' => t('Untracked'),
-      'candidates' => '-',
-      'link' => l(t('edit'), 'admin/structure/types/manage/' . $type, array('query' => array('destination' => 'admin/config/content/node_revision_delete'))),
-    );
+  foreach ($content_types as $content_type) {
 
-    if (array_key_exists($type, $tracked_content_types)) {
-      $row['number'] = $tracked_content_types[$type];
-      $candidate_nodes = count(node_revision_delete_candidates($type, $tracked_content_types[$type]));
-      $row['candidates'] = $candidate_nodes;
-      if ($candidate_nodes && !$exists_candidates_nodes) {
-        $exists_candidates_nodes = TRUE;
-      }
+    if (FALSE) {
+
+    }
+    else {
+      $minimum_revisions_to_keep = t('Untracked');
+      $candidate_nodes = '-';
+      $when_to_delete = t('Untracked');
+      $minimum_age_to_delete = t('Untracked');
     }
 
-    $rows[] = $row;
+//      'link' => l(t('edit'), 'admin/structure/types/manage/' . $type, array('query' => array('destination' => 'admin/config/content/node_revision_delete'))),
+    $dropdown = 'Options';
+
+    $rows[] = [
+      $content_type->name,
+      $content_type->type,
+      $minimum_revisions_to_keep,
+      $minimum_age_to_delete,
+      $when_to_delete,
+      $candidate_nodes,
+      $dropdown,
+    ];
   }
-  $form['tracked'] = array(
+
+  $form['current_configuration'] = array(
     '#theme' => 'table',
     '#caption' => t('Current configuration'),
-    '#header' => $headers,
+    '#header' => $header,
     '#rows' => $rows,
     '#attached' => array(
       'css' => array(
@@ -55,36 +67,46 @@ function node_revision_delete_form($form, &$form_state) {
     ),
   );
 
-  // Number of revisions to delete per loop.
-  $options_cron = array(10, 20, 50, 100, 200, 500, 1000);
+  // Available options for node_revision_delete_cron variable.
+  $options_node_revision_delete_cron = [
+    10 => 10,
+    20 => 20,
+    50 => 50,
+    100 => 100,
+    200 => 200,
+    500 => 500,
+    1000 => 1000,
+  ];
+
   $form['node_revision_delete_cron'] = array(
     '#type' => 'select',
     '#title' => t('How many revisions do you want to delete per cron run?'),
     '#description' => t('Deleting node revisions is a database intensive task. Increase this value if you think that the server can handle more deletions per cron run.'),
-    '#options' => array_combine($options_cron, $options_cron),
-    '#default_value' => variable_get('node_revision_delete_cron', NODE_REVISION_DELETE_CRON),
+    '#options' => $options_node_revision_delete_cron,
+    '#default_value' => variable_get('node_revision_delete_cron'),
   );
 
-  // Available times to delete revisions.
-  $option_time = array(
-    'never' => 'Never',
-    'every_time' => 'Every time cron runs',
-    'everyday' => 'Everyday',
-    'every_week' => 'Every Week',
-    'every_10_days' => 'Every 10 Days',
-    'every_15_days' => 'Every 15 Days',
-    'every_month' => 'Every Month',
-    'every_3_months' => 'Every 3 Months',
-    'every_6_months' => 'Every 6 Months',
-    'every_year' => 'Every Year',
-  );
+    // Available options for node_revision_delete_time variable.
+    $options_node_revision_delete_time = [
+      'never' => t('Never'),
+      'every_time' => t('Every time cron runs'),
+      'everyday' => t('Everyday'),
+      'every_week' => t('Every Week'),
+      'every_10_days' => t('Every 10 Days'),
+      'every_15_days' => t('Every 15 Days'),
+      'every_month' => t('Every Month'),
+      'every_3_months' => t('Every 3 Months'),
+      'every_6_months' => t('Every 6 Months'),
+      'every_year' => t('Every Year'),
+    ];
+
   $form['node_revision_delete_time'] = array(
     '#type' => 'select',
-    '#options' => $option_time,
+    '#options' => $options_node_revision_delete_time,
     '#title' => t('How often should revision be deleted while cron runs?'),
-    '#default_value' => variable_get('node_revision_delete_time', NODE_REVISION_DELETE_TIME),
+    '#default_value' => variable_get('node_revision_delete_time'),
   );
-  // Providing the option to run now the batch job.
+// Providing the option to run now the batch job.
   if ($exists_candidates_nodes) {
     $disabled = FALSE;
     $description = t('This will start a batch job to delete old revisions for tracked content types.');
@@ -117,7 +139,7 @@ function node_revision_delete_form_submit($form, &$form_state) {
 
   $node_revision_delete_content_types = node_revision_delete_content_types();
   if ($form_state['values']['run_now'] && count($node_revision_delete_content_types)) {
-    // Set up the batch job.
+// Set up the batch job.
     $operations = array();
     foreach ($node_revision_delete_content_types as $content_type => $revisions_to_keep) {
       $operations[] = array('node_revision_delete_batch_process',

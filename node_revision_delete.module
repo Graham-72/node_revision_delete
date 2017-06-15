@@ -4,7 +4,6 @@
  * @file
  * Node Revision Delete Module.
  */
-
 // Time options.
 const TIME_OPTIONS = [
   'days' => [
@@ -287,29 +286,36 @@ function _node_revision_delete_delete_content_type_config($content_type) {
 }
 
 /**
- * Helper function to return the list of candidate nids.
+ * Return the list of candidate nodes for node revision delete.
  *
  * @param string $content_type
- *   A content type machine name.
- * @param int $max_revisions
- *   Match nodes with a total amount of revisions higher than this number.
+ *   Content type machine name.
+ * @param int $minimum_revisions_to_keep
+ *   Minimum number of revisions to keep.
+ * @param int $minimum_age_to_delete
+ *   Minimum age in months of revision to delete.
+ * @param int $when_to_delete
+ *   Number of inactivity months to wait for delete a revision.
  *
  * @return array
  *   Array of nids.
  */
-function node_revision_delete_candidates($content_type, $max_revisions) {
+function _node_revision_delete_candidates($content_type, $minimum_revisions_to_keep, $minimum_age_to_delete, $when_to_delete) {
   $params = array(
     ':content_type' => $content_type,
-    ':max_revisions' => $max_revisions,
+    ':max_revisions' => $minimum_revisions_to_keep,
   );
-  $result = db_query('SELECT r.nid, count(*) as total
+
+  if (!$minimum_age_to_delete && !$when_to_delete) {
+    $result = db_query('SELECT r.nid, count(*) as total
                      FROM {node} n
                      INNER JOIN {node_revision} r ON r.nid = n.nid
                      WHERE n.type = :content_type
                      GROUP BY r.nid
                      HAVING count(*) > :max_revisions
                      ORDER BY total DESC', $params);
-  return $result->fetchCol();
+    return $result->fetchCol();
+  }
 }
 
 /**
@@ -446,7 +452,7 @@ function node_revision_delete_cron() {
     // Flag used to count how many have been deleted in this cron run.
     $total_deleted = 0;
     foreach ($tracked_content_types as $content_type => $revisions_to_keep) {
-      $candidate_nids = node_revision_delete_candidates($content_type, $revisions_to_keep);
+      $candidate_nids = _node_revision_delete_candidates($content_type, $revisions_to_keep);
       if (!empty($candidate_nids)) {
         foreach ($candidate_nids as $nid) {
           $deleted_revisions = _node_revision_delete_do_delete($nid, $revisions_to_keep, $max);

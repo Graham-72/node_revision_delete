@@ -20,19 +20,54 @@ function node_revision_delete_form($form, &$form_state) {
     t('Operations'),
   );
 
-// Table rows.
+  // Table rows.
   $rows = array();
 
-// Getting the config variables.
+  // Getting the config variables.
   $node_revision_delete_track = variable_get('node_revision_delete_track', array());
-// Looking for all the content types.
+  // Looking for all the content types.
   $content_types = node_type_get_types();
+  // Check if exists candidates nodes.
   $exists_candidates_nodes = FALSE;
 
+  // Return to the same page after save the content type.
+  $destination = 'admin/config/content/node_revision_delete';
   foreach ($content_types as $content_type) {
+//    $route_parameters = ['node_type' => $content_type->type];
+//    // Operations dropdown.
+//    $dropdown = [
+//      '#type' => 'dropbutton',
+//      '#links' => [
+//        // Action to edit the content type.
+//        'edit' => [
+//          'title' => t('Edit'),
+//          'url' => Url::fromRoute('entity.node_type.edit_form', $route_parameters, $options),
+//        ],
+//      ],
+//    ];
+    if (isset($node_revision_delete_track[$content_type->type])) {
+      // Minimum revisions to keep in the database.
+      $minimum_revisions_to_keep = $node_revision_delete_track[$content_type->type]['minimum_revisions_to_keep'];
 
-    if (FALSE) {
+      // Minimum age to delete (is a number, 0 for none).
+      $minimum_age_to_delete_number = $node_revision_delete_track[$content_type->type]['minimum_age_to_delete'];
+      $minimum_age_to_delete = (bool) $minimum_age_to_delete_number ? _node_revision_delete_time_string('minimum_age_to_delete', $minimum_age_to_delete_number) : t('None');
 
+      // When to delete time (is a number, 0 for always).
+      $when_to_delete_number = $node_revision_delete_track[$content_type->type]['when_to_delete'];
+      $when_to_delete = (bool) $when_to_delete_number ? _node_revision_delete_time_string('when_to_delete', $when_to_delete_number) : t('Always delete');
+
+      // Number of candidates nodes to delete theirs revision.
+      $candidate_nodes = count(_node_revision_delete_candidates($content_type->type, $minimum_revisions_to_keep, $minimum_age_to_delete_number, $when_to_delete_number));
+      // If we have candidates nodes then we will allow to run the batch job.
+      if ($candidate_nodes && !$exists_candidates_nodes) {
+        $exists_candidates_nodes = TRUE;
+      }
+//      // Action to delete the configuration for the content type.
+//      $dropdown['#links']['delete'] = [
+//        'title' => t('Untrack'),
+//        'url' => Url::fromRoute('node_revision_delete.content_type_configuration_delete_confirm', ['content_type' => $content_type->type]),
+//      ];
     }
     else {
       $minimum_revisions_to_keep = t('Untracked');
@@ -41,9 +76,9 @@ function node_revision_delete_form($form, &$form_state) {
       $minimum_age_to_delete = t('Untracked');
     }
 
-//      'link' => l(t('edit'), 'admin/structure/types/manage/' . $type, array('query' => array('destination' => 'admin/config/content/node_revision_delete'))),
+    // Rendering the dropdown.
     $dropdown = 'Options';
-
+    // Setting the row values.
     $rows[] = [
       $content_type->name,
       $content_type->type,
@@ -54,7 +89,7 @@ function node_revision_delete_form($form, &$form_state) {
       $dropdown,
     ];
   }
-
+  // Table with current configuration.
   $form['current_configuration'] = array(
     '#theme' => 'table',
     '#caption' => t('Current configuration'),
@@ -66,7 +101,6 @@ function node_revision_delete_form($form, &$form_state) {
       ),
     ),
   );
-
   // Available options for node_revision_delete_cron variable.
   $options_node_revision_delete_cron = [
     10 => 10,
@@ -86,27 +120,84 @@ function node_revision_delete_form($form, &$form_state) {
     '#default_value' => variable_get('node_revision_delete_cron'),
   );
 
-    // Available options for node_revision_delete_time variable.
-    $options_node_revision_delete_time = [
-      'never' => t('Never'),
-      'every_time' => t('Every time cron runs'),
-      'everyday' => t('Everyday'),
-      'every_week' => t('Every Week'),
-      'every_10_days' => t('Every 10 Days'),
-      'every_15_days' => t('Every 15 Days'),
-      'every_month' => t('Every Month'),
-      'every_3_months' => t('Every 3 Months'),
-      'every_6_months' => t('Every 6 Months'),
-      'every_year' => t('Every Year'),
-    ];
-
+  // Available options for node_revision_delete_time variable.
+  $options_node_revision_delete_time = [
+    'never' => t('Never'),
+    'every_time' => t('Every time cron runs'),
+    'everyday' => t('Everyday'),
+    'every_week' => t('Every Week'),
+    'every_10_days' => t('Every 10 Days'),
+    'every_15_days' => t('Every 15 Days'),
+    'every_month' => t('Every Month'),
+    'every_3_months' => t('Every 3 Months'),
+    'every_6_months' => t('Every 6 Months'),
+    'every_year' => t('Every Year'),
+  ];
   $form['node_revision_delete_time'] = array(
     '#type' => 'select',
-    '#options' => $options_node_revision_delete_time,
     '#title' => t('How often should revision be deleted while cron runs?'),
+    '#description' => t('Frequency of the scheduled mass revision deletion.'),
+    '#options' => $options_node_revision_delete_time,
     '#default_value' => variable_get('node_revision_delete_time'),
   );
-// Providing the option to run now the batch job.
+  // Time options.
+  $allowed_time = [
+    'days' => t('Days'),
+    'weeks' => t('Weeks'),
+    'months' => t('Months'),
+  ];
+  // Configuration for the node_revision_delete_minimum_age_to_delete_time
+  // variable.
+  $form['minimum_age_to_delete'] = [
+    '#type' => 'fieldset',
+    '#title' => t('Minimum age of revision to delete configuration'),
+  ];
+
+  $node_revision_delete_minimum_age_to_delete_time = variable_get('node_revision_delete_minimum_age_to_delete_time');
+  $form['minimum_age_to_delete']['node_revision_delete_minimum_age_to_delete_time_max_number'] = [
+    '#type' => 'textfield',
+    '#title' => t('Maximum number allowed'),
+    '#description' => t('The maximum number in the "Minimum age of revision to delete" configuration in each content type edit page. If you change this number and the new value is smaller than the value defined for a content type in the "Minimum age of revision to delete" setting, the "Minimum age of revision to delete" setting for that content type will take it.'),
+    '#default_value' => $node_revision_delete_minimum_age_to_delete_time['max_number'],
+    '#element_validate' => array('element_validate_integer_positive'),
+  ];
+
+  $node_revision_delete_minimum_age_to_delete_time = variable_get('node_revision_delete_minimum_age_to_delete_time');
+  $form['minimum_age_to_delete']['node_revision_delete_minimum_age_to_delete_time_time'] = [
+    '#type' => 'select',
+    '#title' => t('The time value'),
+    '#description' => t('The time value allowed in the "Minimum age of revision to delete" configuration in each content type edit page. If you change this value all the configured content types will take it.'),
+    '#options' => $allowed_time,
+    '#size' => 1,
+    '#default_value' => $node_revision_delete_minimum_age_to_delete_time['time'],
+  ];
+
+  // Configuration for the node_revision_delete_when_to_delete_time variable.
+  $form['when_to_delete'] = [
+    '#type' => 'fieldset',
+    '#title' => t('When to delete configuration'),
+  ];
+
+  $node_revision_delete_when_to_delete_time = variable_get('node_revision_delete_when_to_delete_time');
+  $form['when_to_delete']['node_revision_delete_when_to_delete_time_max_number'] = [
+    '#type' => 'textfield',
+    '#title' => t('Maximum number allowed'),
+    '#description' => t('The maximum number allowed in the "When to delete" configuration in each content type edit page. If you change this number and the new value is smaller than the value defined for a content type in the "When to delete" setting, the "When to delete" setting for that content type will take it.'),
+    '#default_value' => $node_revision_delete_when_to_delete_time['max_number'],
+    '#element_validate' => array('element_validate_integer_positive'),
+  ];
+
+  $node_revision_delete_when_to_delete_time = variable_get('node_revision_delete_when_to_delete_time');
+  $form['when_to_delete']['node_revision_delete_when_to_delete_time_time'] = [
+    '#type' => 'select',
+    '#title' => t('The time value'),
+    '#description' => t('The time value allowed in the "When to delete" configuration in each content type edit page. If you change this value all the configured content types will take it.'),
+    '#options' => $allowed_time,
+    '#size' => 1,
+    '#default_value' => $node_revision_delete_when_to_delete_time['time'],
+  ];
+
+  // Providing the option to run now the batch job.
   if ($exists_candidates_nodes) {
     $disabled = FALSE;
     $description = t('This will start a batch job to delete old revisions for tracked content types.');
@@ -124,7 +215,7 @@ function node_revision_delete_form($form, &$form_state) {
   $form['actions'] = array('#type' => 'actions');
   $form['actions']['submit'] = array(
     '#type' => 'submit',
-    '#value' => t('Save'),
+    '#value' => t('Save configuration'),
   );
 
   return $form;

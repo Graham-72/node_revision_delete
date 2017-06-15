@@ -11,7 +11,7 @@
 function node_revision_delete_batch_process($content_type, $max_revisions, &$context) {
   if (!isset($context['sandbox']['nids'])) {
     // Set initial values.
-    $context['sandbox']['nids'] = node_revision_delete_candidates($content_type, $max_revisions);
+    $context['sandbox']['nids'] = _node_revision_delete_candidates($content_type, $max_revisions);
     $context['sandbox']['current'] = 0;
     $context['sandbox']['total'] = count($context['sandbox']['nids']);
   }

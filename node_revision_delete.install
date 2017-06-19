@@ -16,10 +16,18 @@ function node_revision_delete_install() {
   // Frequency with which to delete revisions while cron is running.
   variable_set('node_revision_delete_time', 'never');
   // Time configuration to know when the revision should be deleted.
-  variable_set('node_revision_delete_when_to_delete_time', array('max_number' => 12, 'time' => 'months'));
+  $node_revision_delete_when_to_delete_time = array(
+    'max_number' => 12,
+    'time' => 'months',
+  );
+  variable_set('node_revision_delete_when_to_delete_time', $node_revision_delete_when_to_delete_time);
   // Time configuration to know the minimum age that the revision should have
   // to be deleted.
-  variable_set('node_revision_delete_minimum_age_to_delete_time', array('max_number' => 12, 'time' => 'months'));
+  $node_revision_delete_minimum_age_to_delete_time = array(
+    'max_number' => 12,
+    'time' => 'months',
+  );
+  variable_set('node_revision_delete_minimum_age_to_delete_time', $node_revision_delete_minimum_age_to_delete_time);
   // Configuration for each content_type.
   variable_set('node_revision_delete_track', array());
 }
@@ -74,10 +82,18 @@ function node_revision_delete_update_7201() {
 function node_revision_delete_update_7300() {
   // Creating new variables.
   // Time configuration to know when the revision should be deleted.
-  variable_set('node_revision_delete_when_to_delete_time', array('max_number' => 12, 'time' => 'months'));
+  $node_revision_delete_when_to_delete_time = array(
+    'max_number' => 12,
+    'time' => 'months',
+  );
+  variable_set('node_revision_delete_when_to_delete_time', $node_revision_delete_when_to_delete_time);
   // Time configuration to know the minimum age that the revision should have
   // to be deleted.
-  variable_set('node_revision_delete_minimum_age_to_delete_time', array('max_number' => 12, 'time' => 'months'));
+  $node_revision_delete_minimum_age_to_delete_time = array(
+    'max_number' => 12,
+    'time' => 'months',
+  );
+  variable_set('node_revision_delete_minimum_age_to_delete_time', $node_revision_delete_minimum_age_to_delete_time);
 
   $node_revision_delete_track = array();
 

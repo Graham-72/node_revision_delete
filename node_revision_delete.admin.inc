@@ -9,7 +9,7 @@
  * Page callback: Form constructor for Node Revision Delete administration form.
  */
 function node_revision_delete_form($form, &$form_state) {
-// Table header.
+  // Table header.
   $header = array(
     t('Content type'),
     t('Machine name'),
@@ -33,18 +33,15 @@ function node_revision_delete_form($form, &$form_state) {
   // Return to the same page after save the content type.
   $destination = 'admin/config/content/node_revision_delete';
   foreach ($content_types as $content_type) {
-//    $route_parameters = ['node_type' => $content_type->type];
-//    // Operations dropdown.
-//    $dropdown = [
-//      '#type' => 'dropbutton',
-//      '#links' => [
-//        // Action to edit the content type.
-//        'edit' => [
-//          'title' => t('Edit'),
-//          'url' => Url::fromRoute('entity.node_type.edit_form', $route_parameters, $options),
-//        ],
-//      ],
-//    ];
+    // Operations dropbutton.
+    $operations = array(
+      'edit' => array(
+        'title' => t('Edit'),
+        'href' => 'admin/structure/types/manage/' . $content_type->type,
+        'query' => array('destination' => $destination),
+      ),
+    );
+
     if (isset($node_revision_delete_track[$content_type->type])) {
       // Minimum revisions to keep in the database.
       $minimum_revisions_to_keep = $node_revision_delete_track[$content_type->type]['minimum_revisions_to_keep'];
@@ -63,11 +60,12 @@ function node_revision_delete_form($form, &$form_state) {
       if ($candidate_nodes && !$exists_candidates_nodes) {
         $exists_candidates_nodes = TRUE;
       }
-//      // Action to delete the configuration for the content type.
-//      $dropdown['#links']['delete'] = [
-//        'title' => t('Untrack'),
-//        'url' => Url::fromRoute('node_revision_delete.content_type_configuration_delete_confirm', ['content_type' => $content_type->type]),
-//      ];
+      // Action to delete the configuration for the content type.
+      $operations['untrack'] = array(
+        'title' => t('Untrack'),
+        'href' => 'admin/structure/views/nojs/analyze/',
+        'query' => array('destination' => $destination),
+      );
     }
     else {
       $minimum_revisions_to_keep = t('Untracked');
@@ -76,8 +74,48 @@ function node_revision_delete_form($form, &$form_state) {
       $minimum_age_to_delete = t('Untracked');
     }
 
-    // Rendering the dropdown.
-    $dropdown = 'Options';
+    // We have ctools?
+    if (module_exists('ctools')) {
+      // Hack to get consistent style with views ctools dropbutton.
+      if (module_exists('views_ui')) {
+        if (module_load_include('inc', 'views_ui', 'includes/admin')) {
+          foreach (views_ui_get_admin_css() as $file => $options) {
+            drupal_add_css($file, $options);
+          }
+        }
+      }
+      // Rendering the dropbutton.
+      $links = array(
+        'links' => $operations,
+        'attributes' => array(
+          'class' => array(
+            'links',
+          ),
+        ),
+      );
+
+      $dropbutton = '<div class="admin-operations">' . theme('links__ctools_dropbutton', $links) . '</div>';
+    }
+    else {
+      $operations_list = array();
+      foreach ($operations as $key => $value) {
+        $link = l($operations[$key]['title'], $operations[$key]['href'], array('query' => $operations[$key]['query']));
+        $operations_list[$key] = array('data' => $link);
+      }
+
+      $links = array(
+        'items' => $operations_list,
+        'attributes' => array(
+          'class' => array(
+            'links',
+            'inline',
+          ),
+        ),
+      );
+
+      $links['attributes']['class'][] = 'inline';
+      $dropbutton = '<div class="admin-operations">' . theme('item_list', $links) . '</div>';
+    }
     // Setting the row values.
     $rows[] = [
       $content_type->name,
@@ -86,7 +124,7 @@ function node_revision_delete_form($form, &$form_state) {
       $minimum_age_to_delete,
       $when_to_delete,
       $candidate_nodes,
-      $dropdown,
+      array('data' => '<div class="links">' . $dropbutton . '</div>', 'class' => array('links')),
     ];
   }
   // Table with current configuration.

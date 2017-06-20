@@ -1,8 +1,17 @@
-Node Revision Delete 7.x-2.8, 2017-XX-XX
-----------------------------------------
+Node Revision Delete 7.x-3.0-alpha1, 2017-06-20
+-----------------------------------------------
 Changes since 7.x-2.7:
 
-- #2881584 by adriancid: Implement the hook_drush_help() hook.
+- by adriancid: Change variables to the his new name.
+- by adriancid: Manage the configuration for the 'when_to_delete' and
+  'minimun_age_to_delete' variables.
+- by adriancid: Create a Confirm Form to delete the content type configuration.
+- by adriancid: Added the operations dropbutton
+- by adriancid: Added time configurations to the module configuration page.
+- by adriancid: Changed the module configuration page.
+- by adriancid: Add the configuration options to the content type edit form.
+- by adriancid: Update variables to the new format.
+- by adriancid: Starting the port of the Drupal 8 module functionalities.
 
 Node Revision Delete 7.x-2.7, 2017-05-25
 ----------------------------------------

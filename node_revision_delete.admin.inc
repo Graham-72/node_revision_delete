@@ -266,9 +266,25 @@ function node_revision_delete_admin_settings_form_submit($form, &$form_state) {
   variable_set('node_revision_delete_cron', $form_state['values']['node_revision_delete_cron']);
   variable_set('node_revision_delete_time', $form_state['values']['node_revision_delete_time']);
 
-  $node_revision_delete_content_types = node_revision_delete_content_types();
-  if ($form_state['values']['run_now'] && count($node_revision_delete_content_types)) {
-// Set up the batch job.
+  $when_to_delete_time_max_number = $form_state['values']['node_revision_delete_when_to_delete_time_max_number'];
+  $node_revision_delete_when_to_delete_time = [
+    'max_number' => $when_to_delete_time_max_number,
+    'time' => $form_state['values']['node_revision_delete_when_to_delete_time_time'],
+  ];
+  // Getting the values for node_revision_delete_minimum_age_to_delete_time.
+  $minimum_age_to_delete_time_max_number = $form_state['values']['node_revision_delete_minimum_age_to_delete_time_max_number'];
+  $node_revision_delete_minimum_age_to_delete_time = [
+    'max_number' => $minimum_age_to_delete_time_max_number,
+    'time' => $form_state['values']['node_revision_delete_minimum_age_to_delete_time_time'],
+  ];
+  // Saving the configuration.
+  _node_revision_delete_update_time_max_number_config('when_to_delete', $when_to_delete_time_max_number);
+  _node_revision_delete_update_time_max_number_config('minimum_age_to_delete', $minimum_age_to_delete_time_max_number);
+  variable_set('node_revision_delete_when_to_delete_time', $node_revision_delete_when_to_delete_time);
+  variable_set('node_revision_delete_minimum_age_to_delete_time', $node_revision_delete_minimum_age_to_delete_time);
+
+  if ($form_state['values']['run_now']) {
+    // Set up the batch job.
     $operations = array();
     foreach ($node_revision_delete_content_types as $content_type => $revisions_to_keep) {
       $operations[] = array('node_revision_delete_batch_process',
@@ -310,12 +326,7 @@ function node_revision_delete_content_type_configuration_delete_form($form, &$fo
   $submit = t('Delete');
   $cancel = t('Cancel');
 
-  $form = confirm_form($form,
-  $question,
-  $cancel_url,
-  $description,
-  $submit,
-  $cancel
+  $form = confirm_form($form, $question, $cancel_url, $description, $submit, $cancel
   );
 
   return $form;

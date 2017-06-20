@@ -68,13 +68,18 @@ function node_revision_delete_menu() {
     'title' => 'Node Revision Delete',
     'description' => 'Settings for automatically deleting node revisions.',
     'page callback' => 'drupal_get_form',
-    'page arguments' => array('node_revision_delete_form'),
+    'page arguments' => array('node_revision_delete_admin_settings_form'),
     'access callback' => 'user_access',
     'access arguments' => array('administer node_revision_delete'),
     'type' => MENU_NORMAL_ITEM,
     'file' => 'node_revision_delete.admin.inc',
   );
-
+  $items['admin/config/content/node_revision_delete/delete/%'] = array(
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('node_revision_delete_content_type_configuration_delete_form', 5),
+    'access arguments' => array('administer node_revision_delete'),
+    'file' => 'node_revision_delete.admin.inc',
+  );
   return $items;
 }
 

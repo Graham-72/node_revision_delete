@@ -8,7 +8,7 @@
 /**
  * Page callback: Form constructor for Node Revision Delete administration form.
  */
-function node_revision_delete_form($form, &$form_state) {
+function node_revision_delete_admin_settings_form($form, &$form_state) {
   // Table header.
   $header = array(
     t('Content type'),
@@ -63,7 +63,7 @@ function node_revision_delete_form($form, &$form_state) {
       // Action to delete the configuration for the content type.
       $operations['untrack'] = array(
         'title' => t('Untrack'),
-        'href' => 'admin/structure/views/nojs/analyze/',
+        'href' => '/admin/config/content/node_revision_delete/delete/' . $content_type->type,
         'query' => array('destination' => $destination),
       );
     }
@@ -260,9 +260,9 @@ function node_revision_delete_form($form, &$form_state) {
 }
 
 /**
- * Form submit handler for the settings form.
+ * Form submit handler for the Node Revision Delete administration form.
  */
-function node_revision_delete_form_submit($form, &$form_state) {
+function node_revision_delete_admin_settings_form_submit($form, &$form_state) {
   variable_set('node_revision_delete_cron', $form_state['values']['node_revision_delete_cron']);
   variable_set('node_revision_delete_time', $form_state['values']['node_revision_delete_time']);
 
@@ -289,4 +289,49 @@ function node_revision_delete_form_submit($form, &$form_state) {
     batch_set($batch);
   }
   drupal_set_message(t('Settings Saved Successfully.'));
+}
+
+/**
+ * Page callback: Form constructor for content type configuration delete form.
+ */
+function node_revision_delete_content_type_configuration_delete_form($form, &$form_state) {
+  $content_type_machine_name = arg(5);
+
+  $content_types = node_type_get_types();
+  $content_type_name = $content_types[$content_type_machine_name]->name;
+
+  $question = t('Are you sure you want to delete the configuration for the "%content_type" content type?', ['%content_type' => $content_type_name]);
+
+  $cancel_url = 'admin/config/content/node_revision_delete';
+
+  $description = '<p>' . t('This action will delete the Node Revision Delete configuration for the "@content_type" content type, if this action take place the content type will not be available for revision deletion.', ['@content_type' => $content_type_name]) . '</p>';
+  $description .= '<p>' . t('The action cannot be undone.') . '</p>';
+
+  $submit = t('Delete');
+  $cancel = t('Cancel');
+
+  $form = confirm_form($form,
+  $question,
+  $cancel_url,
+  $description,
+  $submit,
+  $cancel
+  );
+
+  return $form;
+}
+
+/**
+ * Form submit handler for the content type configuration delete form.
+ */
+function node_revision_delete_content_type_configuration_delete_form_submit($form, &$form_state) {
+  // Getting the content type machine name.
+  $content_type_machine_name = arg(5);
+  // Deleting the configuration.
+  _node_revision_delete_delete_content_type_config($content_type_machine_name);
+  // Searching the content type name.
+  $content_types = node_type_get_types();
+  $content_type_name = $content_types[$content_type_machine_name]->name;
+  // Printing a confirmation message.
+  drupal_set_message(t('The Node Revision Delete configuration for the "@content_type" content type has been deleted.', ['@content_type' => $content_type_name]));
 }

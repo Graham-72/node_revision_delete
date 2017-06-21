@@ -2,6 +2,7 @@ Node Revision Delete 7.x-3.0-alpha2, 2017-XX-XX
 -----------------------------------------------
 Changes since 7.x-3.0-alpha1:
 
+- #2888217 by gmaltoni, adriancid: Fix javascript coding standard format.
 - #2888159 by adriancid: Drush command to get how many revisions will be deleted
   per cron run.
 - #2888145 by adriancid: Drush command to configure how many revisions delete

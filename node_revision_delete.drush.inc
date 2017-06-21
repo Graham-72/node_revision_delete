@@ -127,8 +127,14 @@ function drush_node_revision_delete_nrd_delete_cron_run() {
     // Saving the values in the config.
     variable_set('node_revision_delete_cron', $args[0]);
 
-    $message = dt('The module was configurated to delete @revisions revisions per cron run.', ['@revisions' => $args[0]]);
+    $message = dt('The module was configurated to delete @revisions revisions per cron run.', array('@revisions' => $args[0]));
     drush_log($message, 'success');
+  }
+  else {
+    // Getting the values from the config.
+    $revisions = variable_get('node_revision_delete_cron');
+    $message = dt('The quantity of revisions to delete per cron run is: @revisions.', array('@revisions' => $revisions));
+    drush_print($message);
   }
 }
 

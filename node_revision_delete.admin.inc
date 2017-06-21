@@ -175,6 +175,7 @@ function node_revision_delete_admin_settings_form(array $form, array &$form_stat
     'every_3_months' => t('Every 3 Months'),
     'every_6_months' => t('Every 6 Months'),
     'every_year' => t('Every Year'),
+    'every_2_years' => t('Every 2 Years'),
   );
   $form['node_revision_delete_time'] = array(
     '#type' => 'select',

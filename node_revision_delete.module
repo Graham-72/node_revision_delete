@@ -481,6 +481,13 @@ function node_revision_delete_cron() {
         $execute_revision_delete = 1;
       }
       break;
+
+    case 'every_2_years':
+      if ($time_difference > 63072000) {
+        variable_set('node_revision_delete_last_execute', $current_time);
+        $execute_revision_delete = 1;
+      }
+      break;
   }
 
   if ($execute_revision_delete) {

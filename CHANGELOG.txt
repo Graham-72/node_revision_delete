@@ -2,6 +2,8 @@ Node Revision Delete 7.x-3.0-alpha2, 2017-XX-XX
 -----------------------------------------------
 Changes since 7.x-3.0-alpha1:
 
+- #2888145 by adriancid: Drush command to configure how many revisions delete
+  per cron run.
 - #2846726 by proconnor15, adriancid: Add option to delete revisions every 2
   years while cron runs.
 - #2888124 by adriancid: Improve the recommended modules section.

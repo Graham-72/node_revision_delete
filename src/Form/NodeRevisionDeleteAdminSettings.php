@@ -85,24 +85,26 @@ class NodeRevisionDeleteAdminSettings extends ConfigFormBase {
     $node_revision_delete_track = $config->get('node_revision_delete_track');
     // Looking for all the content types.
     $content_types = $this->entityManager->getStorage('node_type')->loadMultiple();
+    // Check if exists candidates nodes.
     $exists_candidates_nodes = FALSE;
+
+    // Return to the same page after save the content type.
+    $destination = Url::fromRoute('node_revision_delete.admin_settings')->toString();
+    $destination_options = [
+      'query' => ['destination' => $destination],
+      'fragment' => 'edit-workflow',
+    ];
 
     foreach ($content_types as $content_type) {
       $route_parameters = ['node_type' => $content_type->id()];
-      // Return to the same page after save the content type.
-      $destination = Url::fromRoute('node_revision_delete.admin_settings')->toString();
-      $options = [
-        'query' => ['destination' => $destination],
-        'fragment' => 'edit-workflow',
-      ];
-      // Operations dropdown.
-      $dropdown = [
+      // Operations dropbutton.
+      $dropbutton = [
         '#type' => 'dropbutton',
         '#links' => [
           // Action to edit the content type.
           'edit' => [
             'title' => $this->t('Edit'),
-            'url' => Url::fromRoute('entity.node_type.edit_form', $route_parameters, $options),
+            'url' => Url::fromRoute('entity.node_type.edit_form', $route_parameters, $destination_options),
           ],
         ],
       ];
@@ -122,13 +124,18 @@ class NodeRevisionDeleteAdminSettings extends ConfigFormBase {
 
         // Number of candidates nodes to delete theirs revision.
         $candidate_nodes = count(_node_revision_delete_candidates($content_type->id(), $minimum_revisions_to_keep, $minimum_age_to_delete_number, $when_to_delete_number));
+        // If we have candidates nodes then we will allow to run the batch job.
         if ($candidate_nodes && !$exists_candidates_nodes) {
           $exists_candidates_nodes = TRUE;
         }
+
+        $route_parameters = [
+          'content_type' => $content_type->id(),
+        ];
         // Action to delete the configuration for the content type.
-        $dropdown['#links']['delete'] = [
+        $dropbutton['#links']['delete'] = [
           'title' => $this->t('Untrack'),
-          'url' => Url::fromRoute('node_revision_delete.content_type_configuration_delete_confirm', ['content_type' => $content_type->id()]),
+          'url' => Url::fromRoute('node_revision_delete.content_type_configuration_delete_confirm', $route_parameters),
         ];
       }
       else {
@@ -139,7 +146,7 @@ class NodeRevisionDeleteAdminSettings extends ConfigFormBase {
       }
 
       // Rendering the dropdown.
-      $dropdown = $this->renderer->render($dropdown);
+      $dropbutton = $this->renderer->render($dropbutton);
       // Setting the row values.
       $rows[] = [
         $content_type->label(),
@@ -148,7 +155,7 @@ class NodeRevisionDeleteAdminSettings extends ConfigFormBase {
         $minimum_age_to_delete,
         $when_to_delete,
         $candidate_nodes,
-        $dropdown,
+        $dropbutton,
       ];
     }
     // Table with current configuration.
@@ -173,9 +180,9 @@ class NodeRevisionDeleteAdminSettings extends ConfigFormBase {
       '#title' => $this->t('How many revisions do you want to delete per cron run?'),
       '#description' => $this->t('Deleting node revisions is a database intensive task. Increase this value if you think that the server can handle more deletions per cron run.'),
       '#options' => $options_node_revision_delete_cron,
-      '#size' => 1,
       '#default_value' => $config->get('node_revision_delete_cron'),
     ];
+
     // Available options for node_revision_delete_time variable.
     $options_node_revision_delete_time = [
       'never' => $this->t('Never'),
@@ -192,10 +199,9 @@ class NodeRevisionDeleteAdminSettings extends ConfigFormBase {
     $form['node_revision_delete_time'] = [
       '#type' => 'select',
       '#title' => $this->t('How often should revision be deleted while cron runs?'),
-      '#options' => $options_node_revision_delete_time,
-      '#size' => 1,
-      '#default_value' => $config->get('node_revision_delete_time'),
       '#description' => $this->t('Frequency of the scheduled mass revision deletion.'),
+      '#options' => $options_node_revision_delete_time,
+      '#default_value' => $config->get('node_revision_delete_time'),
     ];
     // Time options.
     $allowed_time = [
@@ -205,7 +211,11 @@ class NodeRevisionDeleteAdminSettings extends ConfigFormBase {
     ];
     // Configuration for the node_revision_delete_minimum_age_to_delete_time
     // variable.
-    $form['minimum_age_to_delete'] = ['#type' => 'fieldset', '#title' => $this->t('Minimum age of revision to delete configuration')];
+    $form['minimum_age_to_delete'] = [
+      '#type' => 'fieldset',
+      '#title' => $this->t('Minimum age of revision to delete configuration'),
+    ];
+
     $form['minimum_age_to_delete']['node_revision_delete_minimum_age_to_delete_time_max_number'] = [
       '#type' => 'number',
       '#title' => $this->t('Maximum number allowed'),
@@ -213,6 +223,7 @@ class NodeRevisionDeleteAdminSettings extends ConfigFormBase {
       '#default_value' => $config->get('node_revision_delete_minimum_age_to_delete_time')['max_number'],
       '#min' => 1,
     ];
+
     $form['minimum_age_to_delete']['node_revision_delete_minimum_age_to_delete_time_time'] = [
       '#type' => 'select',
       '#title' => $this->t('The time value'),
@@ -221,8 +232,13 @@ class NodeRevisionDeleteAdminSettings extends ConfigFormBase {
       '#size' => 1,
       '#default_value' => $config->get('node_revision_delete_minimum_age_to_delete_time')['time'],
     ];
+
     // Configuration for the node_revision_delete_when_to_delete_time variable.
-    $form['when_to_delete'] = ['#type' => 'fieldset', '#title' => $this->t('When to delete configuration')];
+    $form['when_to_delete'] = [
+      '#type' => 'fieldset',
+      '#title' => $this->t('When to delete configuration'),
+    ];
+
     $form['when_to_delete']['node_revision_delete_when_to_delete_time_max_number'] = [
       '#type' => 'number',
       '#title' => $this->t('Maximum number allowed'),
@@ -230,6 +246,7 @@ class NodeRevisionDeleteAdminSettings extends ConfigFormBase {
       '#default_value' => $config->get('node_revision_delete_when_to_delete_time')['max_number'],
       '#min' => 1,
     ];
+
     $form['when_to_delete']['node_revision_delete_when_to_delete_time_time'] = [
       '#type' => 'select',
       '#title' => $this->t('The time value'),
@@ -238,6 +255,7 @@ class NodeRevisionDeleteAdminSettings extends ConfigFormBase {
       '#size' => 1,
       '#default_value' => $config->get('node_revision_delete_when_to_delete_time')['time'],
     ];
+
     // Providing the option to run now the batch job.
     if ($exists_candidates_nodes) {
       $disabled = FALSE;

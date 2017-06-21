@@ -2,6 +2,8 @@ Node Revision Delete 8.1.0-alpha3, 2017-XX-XX
 ---------------------------------------------
 Changes since 8.1.0-alpha2:
 
+- by adriancid: Change drush ndr-delete-cron-run command name to
+  nrd-delete-cron-run.
 - by adriancid: Create an option group in the content type edit form.
 - by adriancid: Create the CHANGELOG.txt file.
 - by adriancid: Disable the 'Delete revisions now' option if there not exists

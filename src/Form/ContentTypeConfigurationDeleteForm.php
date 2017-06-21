@@ -99,8 +99,9 @@ class ContentTypeConfigurationDeleteForm extends ConfirmFormBase {
   public function submitForm(array &$form, FormStateInterface $form_state) {
     // Deleting the content type configuration.
     _node_revision_delete_delete_content_type_config($this->contentType->id());
-
+    // Printing a confirmation message.
     drupal_set_message($this->t('The Node Revision Delete configuration for the "@content_type" content type has been deleted.', ['@content_type' => $this->contentType->label()]));
+    // Redirecting.
     $form_state->setRedirectUrl($this->getCancelUrl());
   }
 

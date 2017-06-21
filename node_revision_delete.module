@@ -10,7 +10,7 @@ use Drupal\Core\Url;
 use Drupal\Core\Form\FormStateInterface;
 
 // Time options.
-const TIME_OPTIONS = [
+const NODE_REVISION_DELETE_TIME_OPTIONS = [
   'days' => [
     'singular' => 'day',
     'plural' => 'days',
@@ -353,9 +353,9 @@ function _node_revision_delete_time_string($config_name, $number) {
   $config = \Drupal::config('node_revision_delete.settings');
   $config_name_time = $config->get('node_revision_delete_' . $config_name . '_time');
   // Searching for the singular word.
-  $time_singular = TIME_OPTIONS[$config_name_time['time']]['singular'];
+  $time_singular = NODE_REVISION_DELETE_TIME_OPTIONS[$config_name_time['time']]['singular'];
   // Searching for the plural word.
-  $time_plural = TIME_OPTIONS[$config_name_time['time']]['plural'];
+  $time_plural = NODE_REVISION_DELETE_TIME_OPTIONS[$config_name_time['time']]['plural'];
   // Is singular or plural?
   $time = $number == 1 ? $time_singular : $time_plural;
   // Return the time string for the $config_name parameter.

@@ -9,15 +9,15 @@
  * Implements hook_drush_command().
  */
 function node_revision_delete_drush_command() {
-  $items['ndr-delete-cron-run'] = [
+  $items['nrd-delete-cron-run'] = [
     'description' => dt('Configures how many revisions delete per cron run.'),
     'arguments' => [
       'quantity' => dt('Revisions quantity to delete per cron run.'),
     ],
-    'aliases' => ['ndr-dcr'],
+    'aliases' => ['nrd-dcr'],
     'examples' => [
-      'ndr-delete-cron-run' => dt('Show how many revisions the module will delete per cron run.'),
-      'ndr-delete-cron-run 50' => dt('Configure the module to delete 50 revisions per cron run.'),
+      'nrd-delete-cron-run' => dt('Show how many revisions the module will delete per cron run.'),
+      'nrd-delete-cron-run 50' => dt('Configure the module to delete 50 revisions per cron run.'),
     ],
   ];
   return $items;
@@ -31,7 +31,7 @@ function node_revision_delete_drush_help($section) {
     case 'meta:node_revision_delete:title':
       return dt('Node Revision Delete commands');
 
-    case 'drush:ndr-delete-cron-run':
+    case 'drush:nrd-delete-cron-run':
       return dt('Configures how many revisions delete per cron run.');
   }
 }
@@ -39,7 +39,7 @@ function node_revision_delete_drush_help($section) {
 /**
  * Implements drush_hook_COMMAND_validate().
  */
-function drush_node_revision_delete_ndr_delete_cron_run_validate() {
+function drush_node_revision_delete_nrd_delete_cron_run_validate() {
   $args = func_get_args();
 
   // Check for only one argument.
@@ -56,9 +56,9 @@ function drush_node_revision_delete_ndr_delete_cron_run_validate() {
 }
 
 /**
- * Callback for the ndr-delete-cron-run command.
+ * Callback for the nrd-delete-cron-run command.
  */
-function drush_node_revision_delete_ndr_delete_cron_run() {
+function drush_node_revision_delete_nrd_delete_cron_run() {
   $args = func_get_args();
   // Getting an editable config because we will get and set a value.
   $config = \Drupal::service('config.factory')->getEditable('node_revision_delete.settings');

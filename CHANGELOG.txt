@@ -1,3 +1,9 @@
+Node Revision Delete 7.x-3.0-alpha2, 2017-XX-XX
+-----------------------------------------------
+Changes since 7.x-3.0-alpha1:
+
+- #2888124 by adriancid: Improve the recommended modules section.
+
 Node Revision Delete 7.x-3.0-alpha1, 2017-06-20
 -----------------------------------------------
 Changes since 7.x-2.7:
@@ -6,7 +12,7 @@ Changes since 7.x-2.7:
 - by adriancid: Manage the configuration for the 'when_to_delete' and
   'minimun_age_to_delete' variables.
 - by adriancid: Create a Confirm Form to delete the content type configuration.
-- by adriancid: Added the operations dropbutton
+- by adriancid: Added the operations dropbutton.
 - by adriancid: Added time configurations to the module configuration page.
 - by adriancid: Changed the module configuration page.
 - by adriancid: Add the configuration options to the content type edit form.

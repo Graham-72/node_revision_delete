@@ -3,6 +3,7 @@ CONTENTS OF THIS FILE
 
  * Introduction
  * Requirements
+ * Recommended modules
  * Installation
  * Configuration
  * Maintainers
@@ -24,7 +25,19 @@ content types.
 REQUIREMENTS
 ------------
 
-No special requirements
+No special requirements.
+
+
+RECOMMENDED MODULES
+-------------------
+
+ * Chaos tool suite (ctools) (https://www.drupal.org/project/ctools):
+   When enabled the links displayed in the operations column in the module
+   configuration page will be displayed as a dropbutton.
+
+ * Views UI (https://www.drupal.org/project/views):
+   When enabled the dropbutton displayed in the operations column in the
+   module configuration page will improve his style.
 
 
 INSTALLATION

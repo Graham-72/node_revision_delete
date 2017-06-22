@@ -527,7 +527,10 @@ function node_revision_delete_cron() {
  *   and pending containing a boolean where TRUE means that there
  *   are more revisions to delete for this node.
  */
-function _node_revision_delete_do_delete($nid, $minimum_revisions_to_keep, $dry_run, $max = 50) {
+function _node_revision_delete_do_delete($nid, $minimum_revisions_to_keep, $dry_run) {
+  // Getting the number of revisions to remove in each cron run.
+  $max = variable_get('node_revision_delete_cron', 50);
+
   $node = new stdClass();
   $node->nid = $nid;
   $revisions = node_revision_list($node);

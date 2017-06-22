@@ -197,7 +197,8 @@ function node_revision_delete_form_node_type_form_alter(&$form, &$form_state) {
  *   The form state.
  */
 function _node_revision_delete_form_node_type_submit(array &$form, array $form_state) {
-  // Getting the form values.
+dpm($form_state);
+// Getting the form values.
   $track = $form_state['values']['node_revision_delete_track'];
   // Getting the content type machine name.
   $content_type = $form['type']['#value'];

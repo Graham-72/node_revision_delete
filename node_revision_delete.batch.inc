@@ -8,7 +8,7 @@
 /**
  * Callback to delete revisions using Batch API.
  */
-function node_revision_delete_batch_process($content_type, $minimum_revisions_to_keep, $minimum_age_to_delete, $when_to_delete, &$context) {
+function node_revision_delete_batch_process($content_type, $minimum_revisions_to_keep, $minimum_age_to_delete, $when_to_delete, $dry_run, &$context) {
   if (!isset($context['sandbox']['nids'])) {
     // Set initial values.
     $context['sandbox']['nids'] = _node_revision_delete_candidates($content_type, $minimum_revisions_to_keep, $minimum_age_to_delete, $when_to_delete);
@@ -18,7 +18,7 @@ function node_revision_delete_batch_process($content_type, $minimum_revisions_to
 
   // Perform the actual revision deletion.
   $nid = $context['sandbox']['nids'][$context['sandbox']['current']];
-  $deleted_revisions = _node_revision_delete_do_delete($nid, $minimum_revisions_to_keep);
+  $deleted_revisions = _node_revision_delete_do_delete($nid, $minimum_revisions_to_keep, $dry_run);
 
   // Save results for final report.
   if (isset($context['results'][$nid])) {

@@ -248,12 +248,29 @@ function node_revision_delete_admin_settings_form(array $form, array &$form_stat
     $disabled = TRUE;
     $description = t('There not exists candidates nodes with revisions to delete.');
   }
+
   $form['run_now'] = array(
     '#type' => 'checkbox',
     '#title' => t('Delete revisions now'),
     '#description' => $description,
     '#disabled' => $disabled,
   );
+
+  $form['dry_run'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Dry run'),
+    '#description' => t('Test run without deleting revisions but seeing the output results.'),
+    '#states' => array(
+      // Hide the dry run option when the run now checkbox is disabled.
+      'visible' => array(
+        ':input[name="run_now"]' => array('checked' => TRUE),
+      ),
+      'unchecked' => array(
+        ':input[name="run_now"]' => array('checked' => TRUE),
+      ),
+    ),
+  );
+
   $form['actions'] = array('#type' => 'actions');
   $form['actions']['submit'] = array(
     '#type' => 'submit',
@@ -306,6 +323,7 @@ function node_revision_delete_admin_settings_form_submit(array $form, array &$fo
           $content_type_info['minimum_revisions_to_keep'],
           $content_type_info['minimum_age_to_delete'],
           $content_type_info['when_to_delete'],
+          $form_state['values']['dry_run'],
         ),
       );
     }

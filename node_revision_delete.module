@@ -197,8 +197,7 @@ function node_revision_delete_form_node_type_form_alter(&$form, &$form_state) {
  *   The form state.
  */
 function _node_revision_delete_form_node_type_submit(array &$form, array $form_state) {
-dpm($form_state);
-// Getting the form values.
+  // Getting the form values.
   $track = $form_state['values']['node_revision_delete_track'];
   // Getting the content type machine name.
   $content_type = $form['type']['#value'];
@@ -213,7 +212,7 @@ dpm($form_state);
   }
   // If we are not tranking the content type and it exists (is not new)
   // we need to delete the existing config.
-  elseif (!$form_state['node']->is_new) {
+  elseif (!isset($form_state['complete form']['#node_type']->is_new) || !$form_state['complete form']['#node_type']->is_new) {
     // Deleting the value from the config.
     _node_revision_delete_delete_content_type_config($content_type);
   }

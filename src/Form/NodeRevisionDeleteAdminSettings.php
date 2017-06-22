@@ -277,12 +277,12 @@ class NodeRevisionDeleteAdminSettings extends ConfigFormBase {
       '#type' => 'checkbox',
       '#title' => $this->t('Dry run'),
       '#description' => $this->t('Test run without deleting revisions but seeing the output results.'),
-      '#disabled' => $disabled,
       '#states' => [
         // Hide the dry run option when the run now checkbox is disabled.
         'visible' => [
           ':input[name="run_now"]' => ['checked' => TRUE],
         ],
+        // Uncheck if the run_now checkbox is unchecked.
         'unchecked' => [
           ':input[name="run_now"]' => ['checked' => TRUE],
         ],

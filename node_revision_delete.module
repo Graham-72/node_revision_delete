@@ -408,9 +408,8 @@ function _node_revision_delete_update_time_max_number_config($config_name, $max_
 function node_revision_delete_cron() {
   // Get node revision limits for all content types.
   // If there are no tracked content types, exit this cron hook.
-  // $content_types = node_revision_delete_content_types();
-  $content_types = array();
-  if (empty($content_types)) {
+  $node_revision_delete_track = variable_get('node_revision_delete_track', array());
+  if (empty($node_revision_delete_track)) {
     return;
   }
 
@@ -491,15 +490,17 @@ function node_revision_delete_cron() {
   }
 
   if ($execute_revision_delete) {
-    $max = variable_get('node_revision_delete_cron', NODE_REVISION_DELETE_CRON);
-    $tracked_content_types = node_revision_delete_content_types();
+    // Getting the number of revisions to remove in each cron run.
+    $max = variable_get('node_revision_delete_cron', 50);
     // Flag used to count how many have been deleted in this cron run.
     $total_deleted = 0;
-    foreach ($tracked_content_types as $content_type => $revisions_to_keep) {
-      $candidate_nids = _node_revision_delete_candidates($content_type, $revisions_to_keep);
+    foreach ($node_revision_delete_track as $content_type => $content_type_info) {
+      // Extracting variables.
+      extract($node_revision_delete_track[$content_type]);
+      $candidate_nids = _node_revision_delete_candidates($content_type, $minimum_revisions_to_keep, $minimum_age_to_delete, $when_to_delete);
       if (!empty($candidate_nids)) {
         foreach ($candidate_nids as $nid) {
-          $deleted_revisions = _node_revision_delete_do_delete($nid, $revisions_to_keep, $max);
+          $deleted_revisions = _node_revision_delete_do_delete($nid, $node_revision_delete_track[$content_type]['minimum_revisions_to_keep']);
           $total_deleted += $deleted_revisions->count;
           if ($total_deleted >= $max) {
             break 2;
@@ -515,19 +516,19 @@ function node_revision_delete_cron() {
  * Private function to perform revision deletion.
  *
  * @param int $nid
- *   The node whoose oldest revisions will be deleted.
+ *   The node whose oldest revisions will be deleted.
  * @param int $minimum_revisions_to_keep
  *   Max amount of revisions to keep for this node.
- * @param int $max
- *   Maximum amount of revisions to delete per run. Defaults to 50,
- *   may be increased or decreased for performance.
+ * @param bool $dry_run
+ *   TRUE to test run without deleting revisions but seeing the output results,
+ *   FALSE for a real node revision delete.
  *
  * @return object
  *   stdClass with list containing an array of deleted revisions
  *   and pending containing a boolean where TRUE means that there
  *   are more revisions to delete for this node.
  */
-function _node_revision_delete_do_delete($nid, $minimum_revisions_to_keep, $dry_run) {
+function _node_revision_delete_do_delete($nid, $minimum_revisions_to_keep, $dry_run = FALSE) {
   // Getting the number of revisions to remove in each cron run.
   $max = variable_get('node_revision_delete_cron', 50);
 

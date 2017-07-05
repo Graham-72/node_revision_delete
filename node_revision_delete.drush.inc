@@ -44,14 +44,12 @@ function drush_node_revision_delete_nrd_delete_cron_run_validate() {
 
   // Check for only one argument.
   if (count($args) > 1) {
-    drush_set_error('DRUSH_NODE_REVISION_DELETE_ERROR', dt('This command use only one argument as quantity.'));
-    return;
+    return drush_set_error('NODE_REVISION_DELETE_INVALID_ARGUMENT', dt('This command use only one argument as quantity.'));
   }
 
   // Check for integer quantity.
   if (isset($args[0]) && !ctype_digit($args[0])) {
-    drush_set_error('DRUSH_NODE_REVISION_DELETE_ERROR', dt('You must specify digits for the quantity'));
-    return;
+    return drush_set_error('NODE_REVISION_DELETE_INVALID_ARGUMENT', dt('You must specify digits for the quantity'));
   }
 }
 

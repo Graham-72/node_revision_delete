@@ -45,6 +45,9 @@ function node_revision_delete_drush_help($section) {
     case 'meta:node_revision_delete:title':
       return dt('Node Revision Delete commands');
 
+    case 'meta:node_revision_delete:summary':
+      return dt("Interacts with the Node Revision Delete module's functionalities.");
+
     case 'drush:node-revision-delete':
       return dt('Deletes old node revisions for a given content type.');
 
@@ -106,14 +109,12 @@ function drush_node_revision_delete_nrd_delete_cron_run_validate() {
 
   // Check for only one argument.
   if (count($args) > 1) {
-    drush_set_error('DRUSH_NODE_REVISION_DELETE_ERROR', dt('This command use only one argument as quantity.'));
-    return;
+    return drush_set_error('NODE_REVISION_DELETE_INVALID_ARGUMENT', dt('This command use only one argument as quantity.'));
   }
 
   // Check for integer quantity.
   if (isset($args[0]) && !ctype_digit($args[0])) {
-    drush_set_error('DRUSH_NODE_REVISION_DELETE_ERROR', dt('You must specify digits for the quantity'));
-    return;
+    return drush_set_error('NODE_REVISION_DELETE_INVALID_ARGUMENT', dt('You must specify digits for the quantity'));
   }
 }
 

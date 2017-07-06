@@ -2,6 +2,9 @@ Node Revision Delete 8.1.0-alpha3, 2017-XX-XX
 ---------------------------------------------
 Changes since 8.1.0-alpha2:
 
+- #2892502 by adriancid: Validate that the parameters exists before use it in
+  array_inshift() function.
+- #2892441 by adriancid: Change the drush error codes.
 - by adriancid: Add a dry-run option. 
 - by adriancid: Change drush ndr-delete-cron-run command name to
   nrd-delete-cron-run.

@@ -176,7 +176,9 @@ function node_revision_delete_form_node_type_form_alter(&$form, FormStateInterfa
   // If we are creating the content type. Putting the custom submit handler
   // first to use the Entity->isNew() function, if the custom submit handler is
   // the last function called always the Entity is created first.
-  array_unshift($form['actions']['save_continue']['#submit'], '_node_revision_delete_form_node_type_submit');
+  if (isset($form['actions']['save_continue']['#submit'])) {
+    array_unshift($form['actions']['save_continue']['#submit'], '_node_revision_delete_form_node_type_submit');
+  }
   // If we are editing the content type. Putting the custom submit handler
   // first to use the Entity->isNew() function, if the custom submit handler is
   // the last function called always the Entity is created first.

@@ -38,6 +38,9 @@ function node_revision_delete_drush_help($section) {
     case 'meta:node_revision_delete:title':
       return dt('Node Revision Delete commands');
 
+    case 'meta:node_revision_delete:summary':
+      return dt("Interacts with the Node Revision Delete module's functionalities.");
+
     case 'drush:nrd-delete-cron-run':
       return dt('Configures how many revisions delete per cron run.');
 

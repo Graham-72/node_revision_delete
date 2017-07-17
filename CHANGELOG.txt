@@ -1,7 +1,10 @@
-Node Revision Delete 7.x-3.0-alpha2, 2017-XX-XX
+Node Revision Delete 7.x-3.0-alpha2, 2017-07-17
 -----------------------------------------------
 Changes since 7.x-3.0-alpha1:
 
+- #2895498 by adriancid: Drush command to get the last time that the node 
+  revision delete was made.
+- #2892441 by adriancid: Change the drush error codes.
 - #2888840 by kbasarab, adriancid: Cron fails with no content types returned.
 - #2888614 by adriancid: Use the node_revision_delete_cron variable value to
   delete the revisions.

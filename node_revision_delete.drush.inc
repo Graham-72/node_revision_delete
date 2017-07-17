@@ -33,7 +33,13 @@ function node_revision_delete_drush_command() {
       'nrd-delete-cron-run 50' => dt('Configure the module to delete 50 revisions per cron run.'),
     ),
   );
-
+  $items['nrd-last-execute'] = [
+    'description' => dt('Get the last time that the node revision delete was made.'),
+    'aliases' => ['nrd-le'],
+    'examples' => [
+      'nrd-last-execute' => dt('Show the last time that the node revision delete was made.'),
+    ],
+  ];
   return $items;
 }
 
@@ -53,6 +59,9 @@ function node_revision_delete_drush_help($section) {
 
     case 'drush:nrd-delete-cron-run':
       return dt('Configures how many revisions delete per cron run.');
+
+    case 'drush:nrd-last-execute':
+      return dt('Get the last time that the node revision delete was made.');
   }
 }
 
@@ -137,6 +146,17 @@ function drush_node_revision_delete_nrd_delete_cron_run() {
     $message = dt('The quantity of revisions to delete per cron run is: @revisions.', array('@revisions' => $revisions));
     drush_print($message);
   }
+}
+
+/**
+ * Callback for the nrd-last_execute command.
+ */
+function drush_node_revision_delete_nrd_last_execute() {
+  // Getting the value from the config.
+  $last_execute = variable_get('node_revision_delete_last_execute');
+  $last_execute = format_date($last_execute);
+  $message = dt('The last time when node revision delete was made was: @last_execute.', ['@last_execute' => $last_execute]);
+  drush_print($message);
 }
 
 /**

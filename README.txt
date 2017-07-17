@@ -71,11 +71,16 @@ CONFIGURATION
 
      Deletes old node revisions for a given content type.
 
+   - nrd-delete-cron-run
+
+     Configures how many revisions delete per cron run.
+
+   - nrd-last-execute
+
+     Get the last time that the node revision delete was made.
 
 MAINTAINERS
 -----------
 
 Current maintainers:
- * Kaushal Kishore (kaushalkishorejaiswal) - https://www.drupal.org/user/2228850
- * Juampy NR (juampynr) - https://www.drupal.org/u/juampynr
  * Adrian Cid Almaguer (adriancid) - https://www.drupal.org/u/adriancid

@@ -195,6 +195,7 @@ class NodeRevisionDeleteAdminSettings extends ConfigFormBase {
       'every_3_months' => $this->t('Every 3 Months'),
       'every_6_months' => $this->t('Every 6 Months'),
       'every_year' => $this->t('Every Year'),
+      'every_2_years' => $this->t('Every 2 Years'),
     ];
     $form['node_revision_delete_time'] = [
       '#type' => 'select',

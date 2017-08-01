@@ -33,13 +33,28 @@ function node_revision_delete_drush_command() {
       'nrd-delete-cron-run 50' => dt('Configure the module to delete 50 revisions per cron run.'),
     ),
   );
-  $items['nrd-last-execute'] = [
+  $items['nrd-last-execute'] = array(
     'description' => dt('Get the last time that the node revision delete was made.'),
-    'aliases' => ['nrd-le'],
-    'examples' => [
+    'aliases' => array('nrd-le'),
+    'examples' => array(
       'nrd-last-execute' => dt('Show the last time that the node revision delete was made.'),
-    ],
-  ];
+    ),
+  );
+  $items['nrd-set-time'] = array(
+    'description' => dt('Configures the frequency with which to delete revisions while cron is running.'),
+    'aliases' => array('nrd-st'),
+    'examples' => array(
+      'nrd-set-time' => dt('Show a list to select the frequency with which to delete revisions while cron is running.'),
+      'nrd-set-time every_time' => dt('Configure the module to delete revisions every time the cron runs.'),
+    ),
+  );
+  $items['nrd-get-time'] = array(
+    'description' => dt('Shows the frequency with which to delete revisions while cron is running.'),
+    'aliases' => array('nrd-gt'),
+    'examples' => array(
+      'nrd-get-time' => dt('Shows the actual frequency with which to delete revisions while cron is running.'),
+    ),
+  );
   return $items;
 }
 
@@ -62,6 +77,12 @@ function node_revision_delete_drush_help($section) {
 
     case 'drush:nrd-last-execute':
       return dt('Get the last time that the node revision delete was made.');
+
+    case 'drush:nrd-set-time':
+      return dt('Configures the frequency with which to delete revisions while cron is running.');
+
+    case 'drush:nrd-get-time':
+      return dt('Shows the frequency with which to delete revisions while cron is running.');
   }
 }
 
@@ -155,7 +176,37 @@ function drush_node_revision_delete_nrd_last_execute() {
   // Getting the value from the config.
   $last_execute = variable_get('node_revision_delete_last_execute');
   $last_execute = format_date($last_execute);
-  $message = dt('The last time when node revision delete was made was: @last_execute.', ['@last_execute' => $last_execute]);
+  $message = dt('The last time when node revision delete was made was: @last_execute.', array('@last_execute' => $last_execute));
+  drush_print($message);
+}
+
+/**
+ * Callback for the nrd-delete-set-time command.
+ */
+function drush_node_revision_delete_nrd_set_time($time = '') {
+  // Check for correct argument.
+  $options = _node_revision_delete_time_value();
+  if (!in_array($time, array_keys($options))) {
+    if (!empty($time)) {
+      drush_log(dt('"@time_value" is not a valid time argument.', array('@time_value' => $time)), 'warning');
+    }
+    $time = drush_choice($options, dt('Choose the frequency with which to delete revisions while cron is running:'));
+  }
+  // Saving the values in the config.
+  variable_set('node_revision_delete_time', $time);
+  $time = _node_revision_delete_time_value($time);
+  $message = dt('The frequency with which to delete revisions while cron is running was set to: @time.', array('@time' => $time));
+  drush_log($message, 'success');
+}
+
+/**
+ * Callback for the nrd-delete-get-time command.
+ */
+function drush_node_revision_delete_nrd_get_time() {
+  // Getting the values from the config.
+  $time = variable_get('node_revision_delete_time');
+  $time = _node_revision_delete_time_value($time);
+  $message = dt('The frequency with which to delete revisions while cron is running is: @time.', array('@time' => $time));
   drush_print($message);
 }
 

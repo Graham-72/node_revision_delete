@@ -164,19 +164,7 @@ function node_revision_delete_admin_settings_form(array $form, array &$form_stat
   );
 
   // Available options for node_revision_delete_time variable.
-  $options_node_revision_delete_time = array(
-    'never' => t('Never'),
-    'every_time' => t('Every time cron runs'),
-    'everyday' => t('Everyday'),
-    'every_week' => t('Every Week'),
-    'every_10_days' => t('Every 10 Days'),
-    'every_15_days' => t('Every 15 Days'),
-    'every_month' => t('Every Month'),
-    'every_3_months' => t('Every 3 Months'),
-    'every_6_months' => t('Every 6 Months'),
-    'every_year' => t('Every Year'),
-    'every_2_years' => t('Every 2 Years'),
-  );
+  $options_node_revision_delete_time = _node_revision_delete_time_value();
   $form['node_revision_delete_time'] = array(
     '#type' => 'select',
     '#title' => t('How often should revision be deleted while cron runs?'),

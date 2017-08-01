@@ -79,6 +79,16 @@ CONFIGURATION
 
      Get the last time that the node revision delete was made.
 
+   - nrd-set-time
+      
+     Configures the frequency with which to delete revisions while cron is
+     running.
+
+   - nrd-get-time
+     
+     Shows the frequency with which to delete revisions while cron is running.
+
+
 MAINTAINERS
 -----------
 

@@ -55,10 +55,6 @@ CONFIGURATION
 
  * Drush commands
 
-   - node-revision-delete
-
-     Deletes old node revisions for a given content type.
-
    - nrd-delete-cron-run
 
      Configures how many revisions delete per cron run.
@@ -66,6 +62,15 @@ CONFIGURATION
    - nrd-last-execute
 
      Get the last time that the node revision delete was made.
+
+   - nrd-set-time
+      
+     Configures the frequency with which to delete revisions while cron is
+     running.
+
+   - nrd-get-time
+     
+     Shows the frequency with which to delete revisions while cron is running.
 
 
 MAINTAINERS

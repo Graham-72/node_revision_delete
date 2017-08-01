@@ -184,19 +184,7 @@ class NodeRevisionDeleteAdminSettings extends ConfigFormBase {
     ];
 
     // Available options for node_revision_delete_time variable.
-    $options_node_revision_delete_time = [
-      'never' => $this->t('Never'),
-      'every_time' => $this->t('Every time cron runs'),
-      'everyday' => $this->t('Everyday'),
-      'every_week' => $this->t('Every Week'),
-      'every_10_days' => $this->t('Every 10 Days'),
-      'every_15_days' => $this->t('Every 15 Days'),
-      'every_month' => $this->t('Every Month'),
-      'every_3_months' => $this->t('Every 3 Months'),
-      'every_6_months' => $this->t('Every 6 Months'),
-      'every_year' => $this->t('Every Year'),
-      'every_2_years' => $this->t('Every 2 Years'),
-    ];
+    $options_node_revision_delete_time = _node_revision_delete_time_value();
     $form['node_revision_delete_time'] = [
       '#type' => 'select',
       '#title' => $this->t('How often should revision be deleted while cron runs?'),

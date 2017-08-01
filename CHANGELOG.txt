@@ -2,6 +2,10 @@ Node Revision Delete 8.1.0-alpha3, 2017-XX-XX
 ---------------------------------------------
 Changes since 8.1.0-alpha2:
 
+- #2899066 by adriancid: Drush command to configure frequency with which to
+  delete revisions while cron is running
+- #2846726 by proconnor15, adriancid: Add option to delete revisions every 2
+  years while cron runs.
 - #2895498 by adriancid: Drush command to get the last time that the node 
   revision delete was made.
 - #2892502 by adriancid: Validate that the parameters exists before use it in

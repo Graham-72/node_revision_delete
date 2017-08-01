@@ -43,8 +43,14 @@ function node_revision_delete_help($route_name, RouteMatchInterface $route_match
       $output .= '</dl>';
       $output .= '<h3>' . t('Drush commands') . '</h3>';
       $output .= '<dl>';
-      $output .= '<dt>drush node-revision-delete</dt>';
-      $output .= '<dd>' . t('Deletes old node revisions for a given content type.') . '</dd>';
+      $output .= '<dt>drush nrd-delete-cron-run</dt>';
+      $output .= '<dd>' . t('Configures how many revisions delete per cron run.') . '</dd>';
+      $output .= '<dt>drush nrd-last-execute</dt>';
+      $output .= '<dd>' . t('Get the last time that the node revision delete was made.') . '</dd>';
+      $output .= '<dt>drush nrd-set-time</dt>';
+      $output .= '<dd>' . t('Configures the frequency with which to delete revisions while cron is running.') . '</dd>';
+      $output .= '<dt>drush nrd-get-time</dt>';
+      $output .= '<dd>' . t('Shows the frequency with which to delete revisions while cron is running.') . '</dd>';
       $output .= '</dl>';
 
       return $output;
@@ -396,5 +402,37 @@ function _node_revision_delete_update_time_max_number_config($config_name, $max_
   if ($changed) {
     // Saving the values in the config.
     $config->set('node_revision_delete_track', $node_revision_delete_track)->save();
+  }
+}
+
+/**
+ * Return the available values for time frequency.
+ *
+ * @param string $index
+ *   The index to retrieve.
+ *
+ * @return string
+ *   The index value (human readable value).
+ */
+function _node_revision_delete_time_value($index = NULL) {
+  $options_node_revision_delete_time = [
+    'never' => t('Never'),
+    'every_time' => t('Every time cron runs'),
+    'everyday' => t('Everyday'),
+    'every_week' => t('Every Week'),
+    'every_10_days' => t('Every 10 Days'),
+    'every_15_days' => t('Every 15 Days'),
+    'every_month' => t('Every Month'),
+    'every_3_months' => t('Every 3 Months'),
+    'every_6_months' => t('Every 6 Months'),
+    'every_year' => t('Every Year'),
+    'every_2_years' => t('Every 2 Years'),
+  ];
+
+  if (isset($index) && isset($options_node_revision_delete_time[$index])) {
+    return $options_node_revision_delete_time[$index];
+  }
+  else {
+    return $options_node_revision_delete_time;
   }
 }

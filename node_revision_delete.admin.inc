@@ -291,9 +291,11 @@ function node_revision_delete_admin_settings_form_submit(array $form, array &$fo
     'max_number' => $minimum_age_to_delete_time_max_number,
     'time' => $form_state['values']['node_revision_delete_minimum_age_to_delete_time_time'],
   );
-  // Saving the configuration.
+  // We need to update the max_number in the existing content type
+  // configuration if the new value is lower than the actual.
   _node_revision_delete_update_time_max_number_config('when_to_delete', $when_to_delete_time_max_number);
   _node_revision_delete_update_time_max_number_config('minimum_age_to_delete', $minimum_age_to_delete_time_max_number);
+  // Saving the configuration.
   variable_set('node_revision_delete_when_to_delete_time', $node_revision_delete_when_to_delete_time);
   variable_set('node_revision_delete_minimum_age_to_delete_time', $node_revision_delete_minimum_age_to_delete_time);
 

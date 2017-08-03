@@ -2,6 +2,8 @@ Node Revision Delete 7.x-3.0-alpha3, 2017-XX-XX
 -----------------------------------------------
 Changes since 7.x-3.0-alpha2:
 
+- #2899740 by adriancid: Drush command to configure time options to know when 
+  the revision should be deleted.
 - #2899066 by adriancid: Drush command to configure frequency with which to
   delete revisions while cron is running
 - #2899085 by adriancid: Update the module help.

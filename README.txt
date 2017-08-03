@@ -88,6 +88,10 @@ CONFIGURATION
      
      Shows the frequency with which to delete revisions while cron is running.
 
+   - nrd-when-to-delete-time
+
+     Configures time options to know when the revision should be deleted.
+
 
 MAINTAINERS
 -----------

@@ -45,6 +45,19 @@ function node_revision_delete_drush_command() {
       'nrd-get-time' => dt('Shows the actual frequency with which to delete revisions while cron is running.'),
     ],
   ];
+  $items['nrd-when-to-delete-time'] = [
+    'description' => dt('Configures time options to know when the revision should be deleted.'),
+    'arguments' => [
+      'max_number' => dt('The maximum number for "When to delete" configuration'),
+      'time' => dt('The time value for "When to delete" configuration (days, weeks or months)'),
+    ],
+    'aliases' => ['nrd-wtdt'],
+    'examples' => [
+      'nrd-when-to-delete-time ' => dt('Shows the time configuration to know when the revision should be deleted.'),
+      'nrd-when-to-delete-time 30 days' => dt('Set the maximum time for "When to delete" configuration to 30 days.'),
+      'nrd-when-to-delete-time 6 weeks' => dt('Set the maximum time for "When to delete" configuration to 6 weeks.'),
+    ],
+  ];
   return $items;
 }
 
@@ -70,6 +83,9 @@ function node_revision_delete_drush_help($section) {
 
     case 'drush:nrd-get-time':
       return dt('Shows the frequency with which to delete revisions while cron is running.');
+
+    case 'drush:nrd-when-to-delete-time':
+      return dt('Configures time options to know when the revision should be deleted.');
   }
 }
 
@@ -78,15 +94,17 @@ function node_revision_delete_drush_help($section) {
  */
 function drush_node_revision_delete_nrd_delete_cron_run_validate() {
   $args = func_get_args();
-
+  // If we don't have arguments we will return the config values.
+  if (!count($args)) {
+    return;
+  }
   // Check for only one argument.
   if (count($args) > 1) {
     return drush_set_error('NODE_REVISION_DELETE_INVALID_ARGUMENT', dt('This command use only one argument as quantity.'));
   }
-
   // Check for integer quantity.
-  if (isset($args[0]) && !ctype_digit($args[0])) {
-    return drush_set_error('NODE_REVISION_DELETE_INVALID_ARGUMENT', dt('You must specify digits for the quantity'));
+  if (!ctype_digit($args[0])) {
+    return drush_set_error('NODE_REVISION_DELETE_INVALID_ARGUMENT', dt('You must specify digits for the quantity.'));
   }
 }
 
@@ -97,7 +115,7 @@ function drush_node_revision_delete_nrd_delete_cron_run() {
   $args = func_get_args();
   // Getting an editable config because we will get and set a value.
   $config = \Drupal::service('config.factory')->getEditable('node_revision_delete.settings');
-
+  // Getting or setting values?
   if (isset($args[0])) {
     // Saving the values in the config.
     $config->set('node_revision_delete_cron', $args[0]);
@@ -109,7 +127,7 @@ function drush_node_revision_delete_nrd_delete_cron_run() {
   else {
     // Getting the values from the config.
     $revisions = $config->get('node_revision_delete_cron');
-    $message = dt('The quantity of revisions to delete per cron run is: @revisions.', ['@revisions' => $revisions]);
+    $message = dt('The revisions quantity to delete per cron run is: @revisions.', ['@revisions' => $revisions]);
     drush_print($message);
   }
 }
@@ -160,6 +178,62 @@ function drush_node_revision_delete_nrd_get_time() {
   $time = _node_revision_delete_time_value($time);
   $message = dt('The frequency with which to delete revisions while cron is running is: @time.', ['@time' => $time]);
   drush_print($message);
+}
+
+/**
+ * Implements drush_hook_COMMAND_validate().
+ */
+function drush_node_revision_delete_nrd_when_to_delete_time_validate() {
+  $args = func_get_args();
+  // If we don't have arguments we will return the config values.
+  if (!count($args)) {
+    return;
+  }
+  // Check for only 2 one argument.
+  if (count($args) != 2) {
+    return drush_set_error('NODE_REVISION_DELETE_INVALID_ARGUMENT', dt('This command use two arguments.'));
+  }
+  // Check for integer quantity.
+  if (!ctype_digit($args[0])) {
+    return drush_set_error('NODE_REVISION_DELETE_INVALID_ARGUMENT', dt('You must enter digits for the maximum number.'));
+  }
+  // Check for time.
+  // @TODO: Update with new variable configuration.
+  if (!in_array($args[1], ['days', 'weeks', 'months'])) {
+    return drush_set_error('NODE_REVISION_DELETE_INVALID_ARGUMENT', dt('The accepted time arguments are: days, weeks or months.'));
+  }
+}
+
+/**
+ * Callback for the nrd-delete-cron-run command.
+ */
+function drush_node_revision_delete_nrd_when_to_delete_time() {
+  $args = func_get_args();
+  // Getting an editable config because we will get and set a value.
+  $config = \Drupal::service('config.factory')->getEditable('node_revision_delete.settings');
+  // Getting or setting values?
+  if (isset($args[0])) {
+    // Saving the values in the config.
+    $node_revision_delete_when_to_delete_time['max_number'] = $args[0];
+    $node_revision_delete_when_to_delete_time['time'] = $args[1];
+    $config->set('node_revision_delete_when_to_delete_time', $node_revision_delete_when_to_delete_time);
+    $config->save();
+    // We need to update the max_number in the existing content type
+    // configuration if the new value is lower than the actual.
+    _node_revision_delete_update_time_max_number_config('when_to_delete', $args[0]);
+    // @TODO: Update with new variable configuration.
+    $message = dt('The maximum time for "When to delete" configuration was set to @max_number @time.', ['@max_number' => $args[0], '@time' => $args[1]]);
+    drush_log($message, 'success');
+  }
+  else {
+    // Getting the values from the config.
+    $node_revision_delete_when_to_delete_time = $config->get('node_revision_delete_when_to_delete_time');
+    $max_number = $node_revision_delete_when_to_delete_time['max_number'];
+    $time = $node_revision_delete_when_to_delete_time['time'];
+    // @TODO: Update with new variable configuration.
+    $message = dt('The maximum time for "When to delete" configuration is: @max_number @time.', ['@max_number' => $max_number, '@time' => $time]);
+    drush_print($message);
+  }
 }
 
 /**

@@ -55,7 +55,9 @@ function node_revision_delete_help($route_name, RouteMatchInterface $route_match
       $output .= '<dt>drush nrd-get-time</dt>';
       $output .= '<dd>' . t('Shows the frequency with which to delete revisions while cron is running.') . '</dd>';
       $output .= '<dt>drush nrd-when-to-delete-time</dt>';
-      $output .= '<dd>' . t('Configures time options to know when the revision should be deleted.') . '</dd>';
+      $output .= '<dd>' . t('Configures the time options for the inactivity time that the revision must have to be deleted.') . '</dd>';
+      $output .= '<dt>drush nrd-minimum-age-to-delete-time</dt>';
+      $output .= '<dd>' . t('Configures time options to know the minimum age that the revision must have to be deleted.') . '</dd>';
       $output .= '</dl>';
 
       return $output;
@@ -389,7 +391,7 @@ function _node_revision_delete_time_string($config_name, $number) {
  * value will be the value for the content type.
  *
  * @param string $config_name
- *   Config name to update.
+ *   Config name to update (when_to_delete or minimum_age_to_delete).
  * @param int $max_number
  *   The maximum number for $config_name parameter.
  */

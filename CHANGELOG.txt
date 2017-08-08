@@ -2,6 +2,8 @@ Node Revision Delete 8.1.0-alpha3, 2017-XX-XX
 ---------------------------------------------
 Changes since 8.1.0-alpha2:
 
+- #2900518 by adriancid: Drush command to configure time options for the minimum
+  age to delete revisions.
 - #2899740 by adriancid: Drush command to configure time options to know when 
   the revision should be deleted.
 - #2899066 by adriancid: Drush command to configure frequency with which to

@@ -74,7 +74,13 @@ CONFIGURATION
 
    - nrd-when-to-delete-time
 
-     Configures time options to know when the revision should be deleted.
+     Configures the time options for the inactivity time that the revision must
+     have to be deleted.
+
+   - nrd-minimum-age-to-delete-time
+
+     Configures time options to know the minimum age that the revision must have
+     to be deleted.
 
 
 MAINTAINERS

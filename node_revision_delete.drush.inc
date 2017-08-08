@@ -59,16 +59,29 @@ function node_revision_delete_drush_command() {
     ),
   );
   $items['nrd-when-to-delete-time'] = array(
-    'description' => dt('Configures time options to know when the revision should be deleted.'),
+    'description' => dt('Configures the time options for the inactivity time that the revision must have to be deleted.'),
     'arguments' => array(
-      'max_number' => dt('The maximum number for "When to delete" configuration'),
-      'time' => dt('The time value for "When to delete" configuration (days, weeks or months)'),
+      'max_number' => dt('The maximum number for inactivity time configuration'),
+      'time' => dt('The time value for inactivity time configuration (days, weeks or months)'),
     ),
     'aliases' => array('nrd-wtdt'),
     'examples' => array(
-      'nrd-when-to-delete-time ' => dt('Shows the time configuration to know when the revision should be deleted.'),
-      'nrd-when-to-delete-time 30 days' => dt('Set the maximum time for "When to delete" configuration to 30 days.'),
-      'nrd-when-to-delete-time 6 weeks' => dt('Set the maximum time for "When to delete" configuration to 6 weeks.'),
+      'nrd-when-to-delete-time ' => dt('Shows the time configuration for the inactivity time.'),
+      'nrd-when-to-delete-time 30 days' => dt('Set the maximum inactivity time to 30 days.'),
+      'nrd-when-to-delete-time 6 weeks' => dt('Set the maximum inactivity time to 6 weeks.'),
+    ),
+  );
+  $items['nrd-minimum-age-to-delete-time'] = array(
+    'description' => dt('Configures time options to know the minimum age that the revision must have to be delete.'),
+    'arguments' => array(
+      'max_number' => dt('The maximum number for minimum age configuration'),
+      'time' => dt('The time value for minimum age configuration (days, weeks or months)'),
+    ),
+    'aliases' => array('nrd-matdt'),
+    'examples' => array(
+      'nrd-minimum-age-to-delete-time ' => dt('Shows the time configuration for the minimum age of revisions.'),
+      'nrd-minimum-age-to-delete-time 30 days' => dt('Set the maximum time for the minimum age to 30 days.'),
+      'nrd-minimum-age-to-delete-time 6 weeks' => dt('Set the maximum time for the minimum age to 6 weeks.'),
     ),
   );
   return $items;
@@ -97,11 +110,11 @@ function node_revision_delete_drush_help($section) {
     case 'drush:nrd-set-time':
       return dt('Configures the frequency with which to delete revisions while cron is running.');
 
-    case 'drush:nrd-get-time':
-      return dt('Shows the frequency with which to delete revisions while cron is running.');
+    case 'drush:nrd-when-to-delete-time':
+      return dt('Configures the time options for the inactivity time that the revision must have to be deleted.');
 
     case 'drush:nrd-when-to-delete-time':
-      return dt('Configures time options to know when the revision should be deleted.');
+      return dt('Configures time options to know the minimum age that the revision must have to be deleted.');
   }
 }
 
@@ -232,13 +245,18 @@ function drush_node_revision_delete_nrd_get_time() {
 }
 
 /**
- * Implements drush_hook_COMMAND_validate().
+ * Helper function to validate the maximum time.
+ *
+ * @param array $args
+ *   An array with number and time.
+ *
+ * @return bool
+ *   A boolean indicating the success of the validation.
  */
-function drush_node_revision_delete_nrd_when_to_delete_time_validate() {
-  $args = func_get_args();
+function _drush_node_revision_delete_validate_maximun_time(array $args) {
   // If we don't have arguments we will return the config values.
   if (!count($args)) {
-    return;
+    return TRUE;
   }
   // Check for only 2 arguments.
   if (count($args) != 2) {
@@ -253,6 +271,14 @@ function drush_node_revision_delete_nrd_when_to_delete_time_validate() {
   if (!in_array($args[1], array('days', 'weeks', 'months'))) {
     return drush_set_error('NODE_REVISION_DELETE_INVALID_ARGUMENT', dt('The accepted time arguments are: days, weeks or months.'));
   }
+}
+
+/**
+ * Implements drush_hook_COMMAND_validate().
+ */
+function drush_node_revision_delete_nrd_when_to_delete_time_validate() {
+  $args = func_get_args();
+  _drush_node_revision_delete_validate_maximun_time($args);
 }
 
 /**
@@ -280,6 +306,43 @@ function drush_node_revision_delete_nrd_when_to_delete_time() {
     $time = $node_revision_delete_when_to_delete_time['time'];
     // @TODO: Update with new variable configuration.
     $message = dt('The maximum time for "When to delete" configuration is: @max_number @time.', array('@max_number' => $max_number, '@time' => $time));
+    drush_print($message);
+  }
+}
+
+/**
+ * Implements drush_hook_COMMAND_validate().
+ */
+function drush_node_revision_delete_nrd_minimum_age_to_delete_time_validate() {
+  $args = func_get_args();
+  _drush_node_revision_delete_validate_maximun_time($args);
+}
+
+/**
+ * Callback for the nrd-minimum-age-to-delete-time command.
+ */
+function drush_node_revision_delete_nrd_minimum_age_to_delete_time() {
+  $args = func_get_args();
+  // Getting or setting values?
+  if (isset($args[0])) {
+    // Saving the values in the config.
+    $node_revision_delete_minimum_age_to_delete_time['max_number'] = $args[0];
+    $node_revision_delete_minimum_age_to_delete_time['time'] = $args[1];
+    variable_set('node_revision_delete_minimum_age_to_delete_time', $node_revision_delete_minimum_age_to_delete_time);
+    // We need to update the max_number in the existing content type
+    // configuration if the new value is lower than the actual.
+    _node_revision_delete_update_time_max_number_config('minimum_age_to_delete', $args[0]);
+    // @TODO: Update with new variable configuration.
+    $message = dt('The maximum time for the minimum age was set to @max_number @time.', array('@max_number' => $args[0], '@time' => $args[1]));
+    drush_log($message, 'success');
+  }
+  else {
+    // Getting the values from the config.
+    $node_revision_delete_minimum_age_to_delete_time = variable_get('node_revision_delete_minimum_age_to_delete_time');
+    $max_number = $node_revision_delete_minimum_age_to_delete_time['max_number'];
+    $time = $node_revision_delete_minimum_age_to_delete_time['time'];
+    // @TODO: Update with new variable configuration.
+    $message = dt('The maximum time for the minimum age is: @max_number @time.', array('@max_number' => $max_number, '@time' => $time));
     drush_print($message);
   }
 }

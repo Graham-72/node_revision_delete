@@ -4,6 +4,7 @@
  * @file
  * Node Revision Delete Module.
  */
+
 // Time options.
 // @TODO: When this will changed to a function update the time validation in:
 // drush_node_revision_delete_nrd_when_to_delete_time_validate()
@@ -50,7 +51,9 @@ function node_revision_delete_help($path, $arg) {
       $output .= '<dt>drush nrd-get-time</dt>';
       $output .= '<dd>' . t('Shows the frequency with which to delete revisions while cron is running.') . '</dd>';
       $output .= '<dt>drush nrd-when-to-delete-time</dt>';
-      $output .= '<dd>' . t('Configures time options to know when the revision should be deleted.') . '</dd>';
+      $output .= '<dd>' . t('Configures the time options for the inactivity time that the revision must have to be deleted.') . '</dd>';
+      $output .= '<dt>drush nrd-minimum-age-to-delete-time</dt>';
+      $output .= '<dd>' . t('Configures time options to know the minimum age that the revision must have to be deleted.') . '</dd>';
       $output .= '</dl>';
 
       return $output;

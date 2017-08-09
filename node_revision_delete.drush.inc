@@ -197,7 +197,7 @@ function drush_node_revision_delete_nrd_get_time() {
 }
 
 /**
- * Helper function to validate the maximun time.
+ * Helper function to validate the maximum time.
  *
  * @param array $args
  *   An array with number and time.
@@ -205,7 +205,7 @@ function drush_node_revision_delete_nrd_get_time() {
  * @return bool
  *   A boolean indicating the success of the validation.
  */
-function _drush_node_revision_delete_validate_maximun_time(array $args) {
+function _drush_node_revision_delete_validate_maximum_time(array $args) {
   // If we don't have arguments we will return the config values.
   if (!count($args)) {
     return TRUE;
@@ -214,12 +214,15 @@ function _drush_node_revision_delete_validate_maximun_time(array $args) {
   if (count($args) != 2) {
     return drush_set_error('NODE_REVISION_DELETE_INVALID_ARGUMENT', dt('This command use two arguments.'));
   }
-  // Check for integer quantity.
+  // Check for integer number.
   if (!ctype_digit($args[0])) {
     return drush_set_error('NODE_REVISION_DELETE_INVALID_ARGUMENT', dt('You must enter digits for the maximum number.'));
   }
+  // Check for valid integer number.
+  if ($args[0] < 1) {
+    return drush_set_error('NODE_REVISION_DELETE_INVALID_ARGUMENT', dt('You must enter a digit no more less than 1 for the maximum number.'));
+  }
   // Check for time.
-  // @TODO: Update with new variable configuration.
   if (!in_array($args[1], ['days', 'weeks', 'months'])) {
     return drush_set_error('NODE_REVISION_DELETE_INVALID_ARGUMENT', dt('The accepted time arguments are: days, weeks or months.'));
   }
@@ -230,7 +233,7 @@ function _drush_node_revision_delete_validate_maximun_time(array $args) {
  */
 function drush_node_revision_delete_nrd_when_to_delete_time_validate() {
   $args = func_get_args();
-  _drush_node_revision_delete_validate_maximun_time($args);
+  _drush_node_revision_delete_validate_maximum_time($args);
 }
 
 /**
@@ -247,11 +250,14 @@ function drush_node_revision_delete_nrd_when_to_delete_time() {
     $node_revision_delete_when_to_delete_time['time'] = $args[1];
     $config->set('node_revision_delete_when_to_delete_time', $node_revision_delete_when_to_delete_time);
     $config->save();
+
     // We need to update the max_number in the existing content type
     // configuration if the new value is lower than the actual.
     _node_revision_delete_update_time_max_number_config('when_to_delete', $args[0]);
-    // @TODO: Update with new variable configuration.
-    $message = dt('The maximum inactivity time was set to @max_number @time.', ['@max_number' => $args[0], '@time' => $args[1]]);
+
+    // Is singular or plural?
+    $time = _node_revision_delete_time_number_string($args[0], $args[1]);
+    $message = dt('The maximum inactivity time was set to @max_number @time.', ['@max_number' => $args[0], '@time' => $time]);
     drush_log($message, 'success');
   }
   else {
@@ -259,7 +265,9 @@ function drush_node_revision_delete_nrd_when_to_delete_time() {
     $node_revision_delete_when_to_delete_time = $config->get('node_revision_delete_when_to_delete_time');
     $max_number = $node_revision_delete_when_to_delete_time['max_number'];
     $time = $node_revision_delete_when_to_delete_time['time'];
-    // @TODO: Update with new variable configuration.
+
+    // Is singular or plural?
+    $time = _node_revision_delete_time_number_string($max_number, $time);
     $message = dt('The maximum inactivity time is: @max_number @time.', ['@max_number' => $max_number, '@time' => $time]);
     drush_print($message);
   }
@@ -270,7 +278,7 @@ function drush_node_revision_delete_nrd_when_to_delete_time() {
  */
 function drush_node_revision_delete_nrd_minimum_age_to_delete_time_validate() {
   $args = func_get_args();
-  _drush_node_revision_delete_validate_maximun_time($args);
+  _drush_node_revision_delete_validate_maximum_time($args);
 }
 
 /**
@@ -287,11 +295,14 @@ function drush_node_revision_delete_nrd_minimum_age_to_delete_time() {
     $node_revision_delete_minimum_age_to_delete_time['time'] = $args[1];
     $config->set('node_revision_delete_minimum_age_to_delete_time', $node_revision_delete_minimum_age_to_delete_time);
     $config->save();
+
     // We need to update the max_number in the existing content type
     // configuration if the new value is lower than the actual.
     _node_revision_delete_update_time_max_number_config('minimum_age_to_delete', $args[0]);
-    // @TODO: Update with new variable configuration.
-    $message = dt('The maximum time for the minimum age was set to @max_number @time.', ['@max_number' => $args[0], '@time' => $args[1]]);
+
+    // Is singular or plural?
+    $time = _node_revision_delete_time_number_string($args[0], $args[1]);
+    $message = dt('The maximum time for the minimum age was set to @max_number @time.', ['@max_number' => $args[0], '@time' => $time]);
     drush_log($message, 'success');
   }
   else {
@@ -299,7 +310,9 @@ function drush_node_revision_delete_nrd_minimum_age_to_delete_time() {
     $node_revision_delete_minimum_age_to_delete_time = $config->get('node_revision_delete_minimum_age_to_delete_time');
     $max_number = $node_revision_delete_minimum_age_to_delete_time['max_number'];
     $time = $node_revision_delete_minimum_age_to_delete_time['time'];
-    // @TODO: Update with new variable configuration.
+
+    // Is singular or plural?
+    $time = _node_revision_delete_time_number_string($max_number, $time);
     $message = dt('The maximum time for the minimum age is: @max_number @time.', ['@max_number' => $max_number, '@time' => $time]);
     drush_print($message);
   }

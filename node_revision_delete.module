@@ -9,25 +9,6 @@ use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Url;
 use Drupal\Core\Form\FormStateInterface;
 
-// Time options.
-// @TODO: When this will changed to a function update the time validation in:
-// drush_node_revision_delete_nrd_when_to_delete_time_validate()
-// drush_node_revision_delete_nrd_when_to_delete_time_run()
-const NODE_REVISION_DELETE_TIME_OPTIONS = [
-  'days' => [
-    'singular' => 'day',
-    'plural' => 'days',
-  ],
-  'weeks' => [
-    'singular' => 'week',
-    'plural' => 'weeks',
-  ],
-  'months' => [
-    'singular' => 'month',
-    'plural' => 'months',
-  ],
-];
-
 /**
  * Implements hook_help().
  */
@@ -367,16 +348,12 @@ function _node_revision_delete_time_string($config_name, $number) {
   // Geting the config.
   $config = \Drupal::config('node_revision_delete.settings');
   $config_name_time = $config->get('node_revision_delete_' . $config_name . '_time');
-  // Searching for the singular word.
-  $time_singular = NODE_REVISION_DELETE_TIME_OPTIONS[$config_name_time['time']]['singular'];
-  // Searching for the plural word.
-  $time_plural = NODE_REVISION_DELETE_TIME_OPTIONS[$config_name_time['time']]['plural'];
   // Is singular or plural?
-  $time = $number == 1 ? $time_singular : $time_plural;
+  $time = _node_revision_delete_time_number_string($config_name_time['time'], $number);
   // Return the time string for the $config_name parameter.
   switch ($config_name) {
     case 'minimum_age_to_delete':
-      return t('@number @time', ['@number' => $number, '@time' => $time]);
+      return $number . ' ' . $time;
 
     case 'when_to_delete':
       return t('After @number @time of inactivity', ['@number' => $number, '@time' => $time]);
@@ -447,4 +424,35 @@ function _node_revision_delete_time_value($index = NULL) {
   else {
     return $options_node_revision_delete_time;
   }
+}
+
+/**
+ * Return the time option in singular or plural.
+ *
+ * @param string $number
+ *   The number.
+ * @param string $time
+ *   The time option (days, weeks or months).
+ *
+ * @return string
+ *   The singular or plural value for the time.
+ */
+function _node_revision_delete_time_number_string($number, $time) {
+  // Time options.
+  $time_options = [
+    'days' => [
+      'singular' => t('day'),
+      'plural' => t('days'),
+    ],
+    'weeks' => [
+      'singular' => t('week'),
+      'plural' => t('weeks'),
+    ],
+    'months' => [
+      'singular' => t('month'),
+      'plural' => t('months'),
+    ],
+  ];
+
+  return $number == 1 ? $time_options[$time]['singular'] : $time_options[$time]['plural'];
 }

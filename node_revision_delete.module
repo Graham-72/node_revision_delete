@@ -5,25 +5,6 @@
  * Node Revision Delete Module.
  */
 
-// Time options.
-// @TODO: When this will changed to a function update the time validation in:
-// drush_node_revision_delete_nrd_when_to_delete_time_validate()
-// drush_node_revision_delete_nrd_when_to_delete_time_run()
-const NODE_REVISION_DELETE_TIME_OPTIONS = array(
-  'days' => array(
-    'singular' => 'day',
-    'plural' => 'days',
-  ),
-  'weeks' => array(
-    'singular' => 'week',
-    'plural' => 'weeks',
-  ),
-  'months' => array(
-    'singular' => 'month',
-    'plural' => 'months',
-  ),
-);
-
 /**
  * Implements hook_help().
  */
@@ -379,12 +360,8 @@ function node_revision_delete_js_alter(&$javascript) {
  */
 function _node_revision_delete_time_string($config_name, $number) {
   $config_name_time = variable_get('node_revision_delete_' . $config_name . '_time');
-  // Searching for the singular word.
-  $time_singular = NODE_REVISION_DELETE_TIME_OPTIONS[$config_name_time['time']]['singular'];
-  // Searching for the plural word.
-  $time_plural = NODE_REVISION_DELETE_TIME_OPTIONS[$config_name_time['time']]['plural'];
   // Is singular or plural?
-  $time = $number == 1 ? $time_singular : $time_plural;
+  $time = _node_revision_delete_time_number_string($number, $config_name_time['time']);
   // Return the time string for the $config_name parameter.
   switch ($config_name) {
     case 'minimum_age_to_delete':
@@ -631,4 +608,35 @@ function _node_revision_delete_time_value($index = NULL) {
   else {
     return $options_node_revision_delete_time;
   }
+}
+
+/**
+ * Return the time option in singular or plural.
+ *
+ * @param string $number
+ *   The number.
+ * @param string $time
+ *   The time option (days, weeks or months).
+ *
+ * @return string
+ *   The singular or plural value for the time.
+ */
+function _node_revision_delete_time_number_string($number, $time) {
+  // Time options.
+  $time_options = array(
+    'days' => array(
+      'singular' => t('day'),
+      'plural' => t('days'),
+    ),
+    'weeks' => array(
+      'singular' => t('week'),
+      'plural' => t('weeks'),
+    ),
+    'months' => array(
+      'singular' => t('month'),
+      'plural' => t('months'),
+    ),
+  );
+
+  return $number == 1 ? $time_options[$time]['singular'] : $time_options[$time]['plural'];
 }

@@ -349,7 +349,7 @@ function _node_revision_delete_time_string($config_name, $number) {
   $config = \Drupal::config('node_revision_delete.settings');
   $config_name_time = $config->get('node_revision_delete_' . $config_name . '_time');
   // Is singular or plural?
-  $time = _node_revision_delete_time_number_string($config_name_time['time'], $number);
+  $time = _node_revision_delete_time_number_string($number, $config_name_time['time']);
   // Return the time string for the $config_name parameter.
   switch ($config_name) {
     case 'minimum_age_to_delete':

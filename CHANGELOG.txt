@@ -1,7 +1,10 @@
-Node Revision Delete 7.x-3.0-alpha3, 2017-XX-XX
+Node Revision Delete 7.x-3.0-beta1, 2017-08-10
 -----------------------------------------------
 Changes since 7.x-3.0-alpha2:
 
+- #2892807 by MustangGB, adriancid, Murz, Andreas Radloff, RaulMuroc, kiwimind:
+  Use the minimum_age_to_delete and when_to_delete variables to delete 
+  revisions.
 - #2900979 by adriancid: Untranslated strings.
 - #2900518 by adriancid: Drush command to configure time options for the minimum
   age to delete revisions.

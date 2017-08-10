@@ -307,26 +307,35 @@ function _node_revision_delete_delete_content_type_config($content_type) {
  *   Array of nids.
  */
 function _node_revision_delete_candidates($content_type, $minimum_revisions_to_keep, $minimum_age_to_delete, $when_to_delete) {
+  static $minimum_age_to_delete_time, $when_to_delete_time;
+
+  // Get the time value for minimum age to delete.
+  if (empty($minimum_age_to_delete_time)) {
+    $minimum_age_to_delete_time = variable_get('node_revision_delete_minimum_age_to_delete_time')['time'];
+  }
+
+  // Get the time value for when to delete.
+  if (empty($when_to_delete_time)) {
+    $when_to_delete_time = variable_get('node_revision_delete_when_to_delete_time')['time'];
+  }
+
   $params = array(
     ':content_type' => $content_type,
     ':max_revisions' => $minimum_revisions_to_keep,
+    ':age' => strtotime($minimum_age_to_delete . ' ' . $minimum_age_to_delete_time . ' ago'),
+    ':when' => strtotime($when_to_delete . ' ' . $when_to_delete_time . ' ago'),
   );
 
-  /*
-   *  TODO: Add other variables.
-   * if (!$minimum_age_to_delete && !$when_to_delete) {
-   */
   $result = db_query('SELECT r.nid, count(*) as total
                      FROM {node} n
                      INNER JOIN {node_revision} r ON r.nid = n.nid
                      WHERE n.type = :content_type
+                     AND r.timestamp < :age
+                     AND n.changed < :when
                      GROUP BY r.nid
                      HAVING count(*) > :max_revisions
                      ORDER BY total DESC', $params);
   return $result->fetchCol();
-  /*
-   * }
-   */
 }
 
 /**

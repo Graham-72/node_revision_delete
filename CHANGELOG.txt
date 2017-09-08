@@ -2,6 +2,8 @@ Node Revision Delete 8.1.0-alpha3, 2017-XX-XX
 ---------------------------------------------
 Changes since 8.1.0-alpha2:
 
+- #2907680 by adriancid: Add the sticky property to the table shown in the
+  admin page.
 - #2900979 by adriancid: Untranslated strings.
 - #2900518 by adriancid: Drush command to configure time options for the minimum
   age to delete revisions.

@@ -164,6 +164,7 @@ class NodeRevisionDeleteAdminSettings extends ConfigFormBase {
       '#caption' => $this->t('Current configuration'),
       '#header' => $header,
       '#rows' => $rows,
+      '#sticky' => TRUE,
     ];
     // Available options for node_revision_delete_cron variable.
     $options_node_revision_delete_cron = [

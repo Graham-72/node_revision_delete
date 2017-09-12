@@ -17,7 +17,7 @@ function node_revision_delete_help($path, $arg) {
       $output .= '<h3>' . t('Uses') . '</h3>';
       $output .= '<dl>';
       $output .= '<dt>' . t('Configuring the module') . '</dt>';
-      $output .= '<dd>' . t('You can manage your settings from the <a href="@config-page">Node Revision Delete</a> page. For this you need the <em>Administer node revision delete settings</em> permission.', array('@config-page' => url('admin/config/content/node_revision_delete'))) . '</dd>';
+      $output .= '<dd>' . t('You can manage your settings from the <a href="@config-page">Node Revision Delete</a> page. For this you need the <em>Administer Node Revision Delete</em> permission.', array('@config-page' => url('admin/config/content/node_revision_delete'))) . '</dd>';
       $output .= '</dl>';
       $output .= '<h3>' . t('Drush commands') . '</h3>';
       $output .= '<dl>';

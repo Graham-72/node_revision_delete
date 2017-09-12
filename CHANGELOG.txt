@@ -1,7 +1,8 @@
-Node Revision Delete 8.1.0-alpha3, 2017-XX-XX
+Node Revision Delete 8.1.0-alpha3, 2017-09-12
 ---------------------------------------------
 Changes since 8.1.0-alpha2:
 
+- #2908345 by adriancid: Change the permission name in the module help page.
 - #2907680 by adriancid: Add the sticky property to the table shown in the
   admin page.
 - #2900979 by adriancid: Untranslated strings.

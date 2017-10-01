@@ -144,23 +144,14 @@ function node_revision_delete_admin_settings_form(array $form, array &$form_stat
       ),
     ),
   );
-  // Available options for node_revision_delete_cron variable.
-  $options_node_revision_delete_cron = array(
-    10 => 10,
-    20 => 20,
-    50 => 50,
-    100 => 100,
-    200 => 200,
-    500 => 500,
-    1000 => 1000,
-  );
-
+  // Configuration for node_revision_delete_cron variable.
   $form['node_revision_delete_cron'] = array(
-    '#type' => 'select',
+    '#type' => 'textfield',
     '#title' => t('How many revisions do you want to delete per cron run?'),
     '#description' => t('Deleting node revisions is a database intensive task. Increase this value if you think that the server can handle more deletions per cron run.'),
     '#options' => $options_node_revision_delete_cron,
     '#default_value' => variable_get('node_revision_delete_cron'),
+    '#element_validate' => array('element_validate_integer_positive'),
   );
 
   // Available options for node_revision_delete_time variable.

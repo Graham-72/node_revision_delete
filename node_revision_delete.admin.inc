@@ -149,9 +149,10 @@ function node_revision_delete_admin_settings_form(array $form, array &$form_stat
     '#type' => 'textfield',
     '#title' => t('How many revisions do you want to delete per cron run?'),
     '#description' => t('Deleting node revisions is a database intensive task. Increase this value if you think that the server can handle more deletions per cron run.'),
-    '#options' => $options_node_revision_delete_cron,
     '#default_value' => variable_get('node_revision_delete_cron'),
     '#element_validate' => array('element_validate_integer_positive'),
+    '#size' => 10,
+    '#maxlength' => 5,
   );
 
   // Available options for node_revision_delete_time variable.
@@ -183,6 +184,8 @@ function node_revision_delete_admin_settings_form(array $form, array &$form_stat
     '#description' => t('The maximum number in the "Minimum age of revision to delete" configuration in each content type edit page. If you change this number and the new value is smaller than the value defined for a content type in the "Minimum age of revision to delete" setting, the "Minimum age of revision to delete" setting for that content type will take it.'),
     '#default_value' => $node_revision_delete_minimum_age_to_delete_time['max_number'],
     '#element_validate' => array('element_validate_integer_positive'),
+    '#size' => 8,
+    '#maxlength' => 5,
   );
 
   $form['minimum_age_to_delete']['node_revision_delete_minimum_age_to_delete_time_time'] = array(
@@ -207,6 +210,8 @@ function node_revision_delete_admin_settings_form(array $form, array &$form_stat
     '#description' => t('The maximum number allowed in the "When to delete" configuration in each content type edit page. If you change this number and the new value is smaller than the value defined for a content type in the "When to delete" setting, the "When to delete" setting for that content type will take it.'),
     '#default_value' => $node_revision_delete_when_to_delete_time['max_number'],
     '#element_validate' => array('element_validate_integer_positive'),
+    '#size' => 8,
+    '#maxlength' => 5,
   );
 
   $form['when_to_delete']['node_revision_delete_when_to_delete_time_time'] = array(

@@ -2,6 +2,8 @@ Node Revision Delete 7.x-3.0-beta2, 2017-XX-XX
 -----------------------------------------------
 Changes since 7.x-3.0-beta1:
 
+- #2911541 by dmitryl, adriancid: Too few arguments for node-revision-delete
+  drush command.
 - #2913281 by adriancid: Set a size and maxlength for integer form elements.
 - #2913006 by adriancid: Define how many revisions you want to delete per cron
   run with a number form element.

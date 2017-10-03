@@ -301,9 +301,9 @@ function _node_revision_delete_delete_content_type_config($content_type) {
  * @param int $minimum_revisions_to_keep
  *   Minimum number of revisions to keep.
  * @param int $minimum_age_to_delete
- *   Minimum age in months of revision to delete.
+ *   Minimum age of revisions to be deleted.
  * @param int $when_to_delete
- *   Number of inactivity months to wait for delete a revision.
+ *   Minimum inactivity age to wait for delete a revision.
  *
  * @return array
  *   Array of nids.
@@ -650,4 +650,22 @@ function _node_revision_delete_time_number_string($number, $time) {
   );
 
   return $number == 1 ? $time_options[$time]['singular'] : $time_options[$time]['plural'];
+}
+
+/**
+ * Returns if a number is a positive integer.
+ *
+ * @param int $number
+ *   The time option (days, weeks or months).
+ *
+ * @return bool
+ *   TRUE if the number is integer positive, FALSE otherwise.
+ *
+ * @see element_validate_integer_positive()
+ */
+function _node_revision_delete_is_integer_positive($number) {
+  if ($number !== '' && (!is_numeric($number) || intval($number) != $number || $number <= 0)) {
+    return FALSE;
+  }
+  return TRUE;
 }

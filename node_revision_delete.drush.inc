@@ -12,11 +12,14 @@ function node_revision_delete_drush_command() {
   $items['node-revision-delete'] = array(
     'description' => dt('Deletes old node revisions for a given content type.'),
     'arguments' => array(
-      'type' => dt("A content type's machine name."),
-      'revisions' => dt('The maximum amount of revisions to keep per node for this content type.'),
+      'type' => dt('Content type machine name.'),
+      'minimum_revisions_to_keep' => dt('Minimum number of revisions to keep.'),
+      'minimum_age_to_delete' => dt('Minimum age of revisions to be deleted.'),
+      'when_to_delete' => dt('Minimum inactivity age to wait for delete a revision.'),
+      'dry_run' => dt('Test run without deleting revisions but seeing the output results.'),
     ),
-    'required-arguments' => TRUE,
     'examples' => array(
+      // @TODO: Add more examples.
       'drush nrd article 50' => dt('Keeps the latest 50 revisions of every article. Deletes the rest.'),
     ),
     'aliases' => array('nrd'),
@@ -121,33 +124,63 @@ function node_revision_delete_drush_help($section) {
 /**
  * Implements drush_hook_COMMAND_validate().
  */
-function drush_node_revision_delete_validate($content_type, $revisions_to_keep) {
+function drush_node_revision_delete_validate() {
+  $args = func_get_args();
   // Make sure the content type exists.
-  $content_types = array_keys(node_type_get_types());
-  if (!in_array($content_type, $content_types)) {
-    drush_set_error('NODE_REVISION_DELETE_WRONG_TYPE', dt('The content type "@type" does not exist. Available content types are @types', array(
-      '@type' => $content_type,
+  $content_types = node_type_get_types();
+  if (!in_array($args[0], array_keys($content_types))) {
+    return drush_set_error('NODE_REVISION_DELETE_WRONG_TYPE', dt('The content type "@type" does not exist. Available content types are @types', array(
+      '@type' => $args[0],
       '@types' => implode(', ', $content_types),
     )));
   }
 
-  // Make sure the number of revisions is a positive integer.
-  // Based on Drupal's element_validate_integer_positive().
-  if (!is_numeric($revisions_to_keep) || intval($revisions_to_keep) != $revisions_to_keep || $revisions_to_keep <= 0) {
-    drush_set_error('NODE_REVISION_DELETE_WRONG_REVISIONS', dt('The amount of revisions to keep must be a positive integer.'));
+  // Make sure the minimum number of revisions is a positive integer.
+  if (!_node_revision_delete_is_integer_positive($args[1])) {
+    return drush_set_error('NODE_REVISION_DELETE_INVALID_ARGUMENT', dt('The minimum number of revisions to keep must be a positive integer.'));
+  }
+
+  // Make sure the minimum age of revisions to be deleted is a integer number.
+  if (!ctype_digit($args[2])) {
+    return drush_set_error('NODE_REVISION_DELETE_INVALID_ARGUMENT', dt('You must enter digits for the minimum age of revisions to be deleted.'));
+  }
+
+  // Make sure the minimum inactivity age to wait for delete a revision is a
+  // integer number.
+  if (!ctype_digit($args[3])) {
+    return drush_set_error('NODE_REVISION_DELETE_INVALID_ARGUMENT', dt('You must enter digits for the minimum inactivity age to wait for delete a revision.'));
+  }
+
+  // Validating the dry-run param.
+  if (!empty($args[4]) && !ctype_digit($args[4]) && !in_array($args[4], array(0, 1), TRUE)) {
+    return drush_set_error('NODE_REVISION_DELETE_INVALID_ARGUMENT', dt('The dry run parameter must be a boolean (0 or 1).'));
+  }
+
+  // Checking if we have candidates nodes to delete.
+  $candidates = count(_node_revision_delete_candidates($args[0], $args[1], $args[2], $args[3]));
+  if (!$candidates) {
+    $content_type = $content_types[$args[0]]->name . ' [' . $args[0] . ']';
+    drush_log(dt('There is not revisions to delete for @content_type.', array('@content_type' => $content_type)), 'warning');
+    return FALSE;
   }
 }
 
 /**
  * Implements drush_COMMANDFILE_COMMANDNAME().
  */
-function drush_node_revision_delete($content_type, $revisions_to_keep) {
+function drush_node_revision_delete() {
+  $args = func_get_args();
+  $dry_run = isset($args[4]) ? (bool) $args[4] : FALSE;
   // Set up the batch job.
   $batch = array(
     'operations' => array(
       array('node_revision_delete_batch_process',
-        array($content_type,
-          $revisions_to_keep,
+        array(
+          $args[0],
+          $args[1],
+          $args[2],
+          $args[3],
+          $dry_run,
         ),
       ),
     ),
@@ -157,7 +190,10 @@ function drush_node_revision_delete($content_type, $revisions_to_keep) {
     'finished' => 'node_revision_delete_batch_finish',
     'file' => drupal_get_path('module', 'node_revision_delete') . '/node_revision_delete.batch.inc',
   );
-
+  // Checking if this is a dry run.
+  if ($dry_run) {
+    drush_log(dt('This is a dry run. No revision will be deleted.'), 'warning');
+  }
   // Start the batch job.
   batch_set($batch);
   drush_backend_batch_process();

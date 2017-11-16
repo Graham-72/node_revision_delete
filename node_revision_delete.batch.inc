@@ -58,7 +58,7 @@ function node_revision_delete_batch_finish($success, $results, $operations) {
       '%error_operation' => $error_operation[0],
       '@arguments' => print_r($error_operation[1], TRUE),
     );
-    $message = t('An error occurred while processing %error_operation with arguments: @arguments', $message_variables, TRUE);
+    $message = t('An error occurred while processing %error_operation with arguments: @arguments', $message_variables);
     drupal_set_message($message, 'error');
   }
 }

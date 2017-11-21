@@ -19,23 +19,6 @@ function node_revision_delete_help($path, $arg) {
       $output .= '<dt>' . t('Configuring the module') . '</dt>';
       $output .= '<dd>' . t('You can manage the module settings from the <a href="@config-page">Node Revision Delete</a> page. For this you need the <em>Administer Node Revision Delete</em> permission.', array('@config-page' => url('admin/config/content/node_revision_delete'))) . '</dd>';
       $output .= '</dl>';
-      $output .= '<h3>' . t('Drush commands') . '</h3>';
-      $output .= '<dl>';
-      $output .= '<dt>drush node-revision-delete</dt>';
-      $output .= '<dd>' . t('Deletes old node revisions for a given content type.') . '</dd>';
-      $output .= '<dt>drush nrd-delete-cron-run</dt>';
-      $output .= '<dd>' . t('Configures how many revisions delete per cron run.') . '</dd>';
-      $output .= '<dt>drush nrd-last-execute</dt>';
-      $output .= '<dd>' . t('Get the last time that the node revision delete was made.') . '</dd>';
-      $output .= '<dt>drush nrd-set-time</dt>';
-      $output .= '<dd>' . t('Configures the frequency with which to delete revisions while cron is running.') . '</dd>';
-      $output .= '<dt>drush nrd-get-time</dt>';
-      $output .= '<dd>' . t('Shows the frequency with which to delete revisions while cron is running.') . '</dd>';
-      $output .= '<dt>drush nrd-when-to-delete-time</dt>';
-      $output .= '<dd>' . t('Configures the time options for the inactivity time that the revision must have to be deleted.') . '</dd>';
-      $output .= '<dt>drush nrd-minimum-age-to-delete-time</dt>';
-      $output .= '<dd>' . t('Configures time options to know the minimum age that the revision must have to be deleted.') . '</dd>';
-      $output .= '</dl>';
 
       return $output;
 

@@ -2,6 +2,8 @@ Node Revision Delete 7.x-3.0-beta2, 2017-XX-XX
 -----------------------------------------------
 Changes since 7.x-3.0-beta1:
 
+- #2925354 by adriancid: Remove the functionalities that allows to see the drush
+  commands in the module help page.
 - #2924043 by helmo, adriancid: t() function is called with an invalid third
   argument.
 - #2911541 by dmitryl, adriancid: Too few arguments for node-revision-delete

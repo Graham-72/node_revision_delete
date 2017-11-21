@@ -39,6 +39,10 @@ RECOMMENDED MODULES
    When enabled the dropbutton displayed in the operations column in the
    module configuration page will improve his style.
 
+ * Drush Help (https://www.drupal.org/project/drush_help):
+   Improves the module help page showing information about the module drush
+   commands.
+
 
 INSTALLATION
 ------------

@@ -231,24 +231,11 @@ function _node_revision_delete_save_content_type_config($content_type, $minimum_
 }
 
 /**
- * Implements hook_form_FORM_ID_alter().
+ * Implements hook_node_type_delete().
  */
-function node_revision_delete_form_node_type_delete_confirm_alter(&$form, &$form_state, $form_id) {
-  // If we are deleting a content type.
-  $form['#submit'][] = '_node_revision_delete_form_node_type_delete';
-}
-
-/**
- * Custom submit handler to delete the configuration variables.
- *
- * @param array $form
- *   The form element.
- * @param array $form_state
- *   The form state.
- */
-function _node_revision_delete_form_node_type_delete(array $form, array &$form_state) {
+function node_revision_delete_node_type_delete($info) {
   // Getting the content type machine name.
-  $content_type = $form['type']['#value'];
+  $content_type = $info->type;
   // Deleting the value from the config.
   _node_revision_delete_delete_content_type_config($content_type);
 }

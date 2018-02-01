@@ -181,7 +181,7 @@ function node_revision_delete_form_node_type_form_alter(&$form, &$form_state) {
  * @param array $form_state
  *   The form state.
  */
-function _node_revision_delete_form_node_type_submit(array &$form, array $form_state) {
+function _node_revision_delete_form_node_type_submit(array &$form, array &$form_state) {
   // Getting the form values.
   $track = $form_state['values']['node_revision_delete_track'];
   // Getting the content type machine name.
@@ -201,6 +201,11 @@ function _node_revision_delete_form_node_type_submit(array &$form, array $form_s
     // Deleting the value from the config.
     _node_revision_delete_delete_content_type_config($content_type);
   }
+  // Cleaning the values to avoid that Drupal create variables for them.
+  unset($form_state['values']['node_revision_delete_track']);
+  unset($form_state['values']['minimum_revisions_to_keep']);
+  unset($form_state['values']['minimum_age_to_delete']);
+  unset($form_state['values']['when_to_delete']);
 }
 
 /**

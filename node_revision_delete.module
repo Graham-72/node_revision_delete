@@ -412,6 +412,13 @@ function node_revision_delete_cron() {
       $execute_revision_delete = 1;
       break;
 
+    case 'every_hour':
+      if ($time_difference > 3600) {
+        variable_set('node_revision_delete_last_execute', $current_time);
+        $execute_revision_delete = 1;
+      }
+      break;
+
     case 'everyday':
       if ($time_difference > 86400) {
         variable_set('node_revision_delete_last_execute', $current_time);
@@ -577,6 +584,7 @@ function _node_revision_delete_time_value($index = NULL) {
   $options_node_revision_delete_time = array(
     'never' => t('Never'),
     'every_time' => t('Every time cron runs'),
+    'every_hour' => t('Every Hour'),
     'everyday' => t('Everyday'),
     'every_week' => t('Every Week'),
     'every_10_days' => t('Every 10 Days'),

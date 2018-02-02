@@ -47,7 +47,7 @@ function node_revision_delete_drush_command() {
     'description' => dt('Configures the frequency with which to delete revisions while cron is running.'),
     'aliases' => array('nrd-st'),
     'arguments' => array(
-      'time' => dt('The time value (never, every_time, everyday, every_week, every_10_days, every_15_days, every_month, every_3_months, every_6_months, every_year or not-every_2_years)'),
+      'time' => dt('The time value (never, every_hour, every_time, everyday, every_week, every_10_days, every_15_days, every_month, every_3_months, every_6_months, every_year or every_2_years)'),
     ),
     'examples' => array(
       'nrd-set-time' => dt('Show a list to select the frequency with which to delete revisions while cron is running.'),

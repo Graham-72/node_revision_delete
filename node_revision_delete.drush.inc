@@ -5,6 +5,8 @@
  * Drush commands related to the Node Revision Delete module.
  */
 
+require_once dirname(__FILE__) . '/node_revision_delete.helpers.inc';
+
 /**
  * Implements hook_drush_command().
  */

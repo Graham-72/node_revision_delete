@@ -2,6 +2,8 @@ Node Revision Delete 7.x-3.0-beta2, 2018-XX-XX
 -----------------------------------------------
 Changes since 7.x-3.0-beta1:
 
+- #2942235 by adriancid: If the content type is not configured to delete node 
+  revisions show the candidates nodes as untracked.
 - #2941747 by adriancid: Put the internal utility functions in another file.
 - #2936290 by artematem, adriancid: Add an option to delete revisions every 
   hour.

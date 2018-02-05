@@ -74,7 +74,7 @@ function node_revision_delete_admin_settings_form(array $form, array &$form_stat
     }
     else {
       $minimum_revisions_to_keep = t('Untracked');
-      $candidate_nodes = '-';
+      $candidate_nodes = t('Untracked');
       $when_to_delete = t('Untracked');
       $minimum_age_to_delete = t('Untracked');
     }

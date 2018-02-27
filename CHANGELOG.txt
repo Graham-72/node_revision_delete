@@ -1,7 +1,9 @@
-Node Revision Delete 7.x-3.0-beta2, 2018-XX-XX
------------------------------------------------
-Changes since 7.x-3.0-beta1:
+Node Revision Delete 7.3.0-beta2, 2018-XX-XX
+--------------------------------------------
+Changes since 7.3.0-beta1:
 
+- #2948493 by adriancid: The module version in the CHANGELOG.txt file is 
+  not correct.
 - #2942235 by adriancid: If the content type is not configured to delete node 
   revisions show the candidates nodes as untracked.
 - #2941747 by adriancid: Put the internal utility functions in another file.
@@ -22,9 +24,9 @@ Changes since 7.x-3.0-beta1:
   run with a number form element.
 - #2908345 by adriancid: Change the permission name in the module help page.
 
-Node Revision Delete 7.x-3.0-beta1, 2017-08-10
------------------------------------------------
-Changes since 7.x-3.0-alpha2:
+Node Revision Delete 7.3.0-beta1, 2017-08-10
+--------------------------------------------
+Changes since 7.3.0-alpha2:
 
 - #2892807 by MustangGB, adriancid, Murz, Andreas Radloff, RaulMuroc, kiwimind:
   Use the minimum_age_to_delete and when_to_delete variables to delete 
@@ -38,9 +40,9 @@ Changes since 7.x-3.0-alpha2:
   delete revisions while cron is running
 - #2899085 by adriancid: Update the module help.
 
-Node Revision Delete 7.x-3.0-alpha2, 2017-07-17
------------------------------------------------
-Changes since 7.x-3.0-alpha1:
+Node Revision Delete 7.3.0-alpha2, 2017-07-17
+---------------------------------------------
+Changes since 7.3.0-alpha1:
 
 - #2895498 by adriancid: Drush command to get the last time that the node 
   revision delete was made.
@@ -60,9 +62,9 @@ Changes since 7.x-3.0-alpha1:
   years while cron runs.
 - #2888124 by adriancid: Improve the recommended modules section.
 
-Node Revision Delete 7.x-3.0-alpha1, 2017-06-20
------------------------------------------------
-Changes since 7.x-2.7:
+Node Revision Delete 7.3.0-alpha1, 2017-06-20
+---------------------------------------------
+Changes since 7.2.7:
 
 - by adriancid: Change variables to the his new name.
 - by adriancid: Manage the configuration for the 'when_to_delete' and
@@ -75,9 +77,9 @@ Changes since 7.x-2.7:
 - by adriancid: Update variables to the new format.
 - by adriancid: Starting the port of the Drupal 8 module functionalities.
 
-Node Revision Delete 7.x-2.7, 2017-05-25
-----------------------------------------
-Changes since 7.x-2.6:
+Node Revision Delete 7.2.7, 2017-05-25
+--------------------------------------
+Changes since 7.2.6:
 
 - #2881507 by adriancid: Create an option group in the content type edit form.
 - #2881502 by adriancid: Use dt() function to translate the drush command
@@ -113,15 +115,15 @@ Changes since 7.x-2.6:
 - by juampy: Validate arguments at Drush command.
 - by juampy: Remove unused option --show-deleted.
 
-Node Revision Delete 7.x-2.6, 2014-09-01
-----------------------------------------
-Changes since 7.x-2.5:
+Node Revision Delete 7.2.6, 2014-09-01
+--------------------------------------
+Changes since 7.2.5:
 
 - by juampy: Fix bug when reporting final results.
 
-Node Revision Delete 7.x-2.5, 2014-09-01
-----------------------------------------
-Changes since 7.x-2.4:
+Node Revision Delete 7.2.5, 2014-09-01
+--------------------------------------
+Changes since 7.2.4:
 
 - by juampy: Fixed admin menu title and description.
 - #2291177 by vbouchet: Use core #element_validate instead of custom function.
@@ -133,15 +135,15 @@ Changes since 7.x-2.4:
 - by juampy: Couple label improvements at the settings form.
 - #2267561 by juampy: Improve reporting on Drush integration.
 
-Node Revision Delete 7.x-2.4, 2014-05-14
-----------------------------------------
-Changes since 7.x-2.3:
+Node Revision Delete 7.2.4, 2014-05-14
+--------------------------------------
+Changes since 7.2.3:
 
 - #2267477 by parashutiki, juampy: Error after upgrade.
 
-Node Revision Delete 7.x-2.3, 2014-05-14
-----------------------------------------
-Changes since 7.x-2.2:
+Node Revision Delete 7.2.3, 2014-05-14
+--------------------------------------
+Changes since 7.2.2:
 
 - General refactoring.
 - #2257053 by jeremyclassic, Cayenne: Error on cron run when no content types
@@ -152,23 +154,23 @@ Changes since 7.x-2.2:
   deletes revisions on every cron run.
 - #2130691 by simone960, robv Do not require PHP 5.3.X.
 
-Node Revision Delete 7.x-2.2, 2014-05-01
-----------------------------------------
-Changes since 7.x-2.1:
+Node Revision Delete 7.2.2, 2014-05-01
+--------------------------------------
+Changes since 7.2.1:
 
 - by juampy: Simplify the logic to choose a list of revisions to delete.
 
-Node Revision Delete 7.x-2.1, 2014-04-29
-----------------------------------------
-Changes since 7.x-2.0:
+Node Revision Delete 7.2.1, 2014-04-29
+--------------------------------------
+Changes since 7.2.0:
 
 - by hexabinaer, juampy: Add permissions settings.
 - by juampy: Fix database update numbering for 7.x-2.x.
 - by juampy: Remove trailing whitespace and packaging script metadata.
 
-Node Revision Delete 7.x-2.0, 2012-10-22
-----------------------------------------
-Changes since 7.x-1.2-unstable1:
+Node Revision Delete 7.2.0, 2012-10-22
+--------------------------------------
+Changes since 7.1.2-unstable1:
 
 - by juampy: Define revision limit per content type.
 - by juampy: Create an upgrade path from 7.x-1.x to 7.x-2.x.
@@ -176,19 +178,19 @@ Changes since 7.x-1.2-unstable1:
 - #2244763 by juampy: Add basic Drush support.
 - #2244549 by juampy: Limit the amount of revisions to be deleted per cron run.
 
-Node Revision Delete 7.x-1.2-unstable1, 2012-09-13
---------------------------------------------------
-Changes since 7.x-1.1:
+Node Revision Delete 7.1.2-unstable1, 2012-09-13
+------------------------------------------------
+Changes since 7.1.1:
 
 - by kaushalkishorejaiswal: The user can delete the revisions by time.
 
-Node Revision Delete 7.x-1.1, 2012-09-13
-----------------------------------------
-Changes since 7.x-1.0:
+Node Revision Delete 7.1.1, 2012-09-13
+--------------------------------------
+Changes since 7.1.0:
 
 - by kaushalkishorejaiswal: Change the name of variable to
   total_revision_to_keep.
 
-Node Revision Delete 7.x-1.0, 2012-09-10
-----------------------------------------
+Node Revision Delete 7.1.0, 2012-09-10
+--------------------------------------
 - Initial release.
